@@ -1,0 +1,33 @@
+# Supabase CLI local-dev config (used by `supabase start` locally and in
+# the CI rls job). Staging/prod projects are provisioned per docs/SETUP.md.
+project_id = "trailhead"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public"]
+
+[db]
+port = 54322
+major_version = 15
+
+[auth]
+enabled = true
+site_url = "http://localhost:3000"
+enable_signup = true
+
+[auth.email]
+enable_signup = true
+enable_confirmations = false
+
+[studio]
+enabled = false
+
+[storage]
+enabled = false
+
+[realtime]
+enabled = false
+
+[analytics]
+enabled = false

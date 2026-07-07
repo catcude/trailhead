@@ -6,8 +6,8 @@ same PR as any security-relevant change.
 
 | Item | Status | Where |
 |---|---|---|
-| RLS on every table, enabled in the migration that creates it | ✅ (profiles) | `supabase/migrations/20260707000001_profiles.sql` |
-| Automated RLS policy tests (cross-user + anon must fail) | ⬜ M1 (needs local Supabase in CI) | planned: `tests/rls/` |
+| RLS on every table, enabled in the migration that creates it | ✅ (all 11 tables) | `supabase/migrations/` |
+| Automated RLS policy tests (cross-user + anon must fail) | ✅ CI `rls` job (local Supabase stack); also verified against Postgres 16 with an auth shim | `tests/rls/policies.test.ts` |
 | No parent/teacher read path into student data | ✅ by construction (no such policy exists) | migrations |
 | Data minimization at signup (email only; role + display name at onboarding) | ✅ | `app/auth/`, `app/(app)/onboarding/` |
 | 13+ age attestation + parental-consent slot | ⬜ M1 onboarding (OQ4 — legal input needed) | — |
@@ -18,7 +18,7 @@ same PR as any security-relevant change.
 | Dependency audit + Dependabot | ✅ | `.github/workflows/ci.yml`, `.github/dependabot.yml` |
 | Security headers (CSP, HSTS, XFO DENY, Referrer-Policy, Permissions-Policy) | ✅ | `next.config.ts` |
 | Nonce-based CSP (drop `unsafe-inline`) | ⬜ backlog | `next.config.ts` |
-| Rate limiting on `/api/checkin` | ✅ limiter util (in-memory); ⬜ Postgres store in M1; endpoint wires in M1 | `lib/utils/rate-limit.ts` |
+| Rate limiting on `/api/checkin` | ✅ Postgres `check_rate_limit()` RPC (security definer; authenticated-only; counters table locked by policy-less RLS) + in-memory per-IP layer | migration 0002, `lib/utils/rate-limit.ts` |
 | Stripe webhook signature verification | ⬜ M2 | planned: `app/api/webhooks/stripe/` |
 | LLM data hygiene (session context only; no-training terms) | ⬜ M2 (OQ1) | planned: `lib/llm/provider.ts` |
 | Branch protection on `main` with required CI checks | ⬜ repo setting — see `docs/SETUP.md` | GitHub |

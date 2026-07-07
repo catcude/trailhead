@@ -42,6 +42,39 @@ jobs:
       - name: Build
         run: pnpm build
 
+  rls:
+    name: Migrations + RLS policy tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Start local Supabase (applies migrations)
+        run: supabase start
+
+      - name: Run RLS policy tests
+        run: |
+          eval "$(supabase status -o env | sed 's/^/export /')"
+          export SUPABASE_TEST_URL="$API_URL"
+          export SUPABASE_TEST_ANON_KEY="$ANON_KEY"
+          export SUPABASE_TEST_SERVICE_ROLE_KEY="$SERVICE_ROLE_KEY"
+          pnpm vitest run tests/rls
+
   audit:
     name: Dependency audit (report)
     runs-on: ubuntu-latest
