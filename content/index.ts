@@ -4,6 +4,7 @@ import { yellow } from "./paths/yellow";
 import { greenQuotes } from "./quotes/green";
 import { yellowQuotes } from "./quotes/yellow";
 import { miniResetToolkits } from "./tools/mini-reset";
+import { bigFiveQuiz } from "./quiz/big-five";
 import { routerPrompt, routerOptions } from "./router";
 import { crisisContent } from "./safety/crisis";
 
@@ -70,6 +71,14 @@ export function collectAuthoredStrings(): Record<string, string> {
       });
     });
     out[`mini-reset/${toolkitId}/reentry`] = toolkit.reentry;
+  }
+
+  for (const question of bigFiveQuiz) {
+    out[`quiz/${question.id}/prompt`] = question.prompt;
+    for (const optionChoice of question.options) {
+      out[`quiz/${question.id}/option:${optionChoice.key}`] =
+        optionChoice.label;
+    }
   }
 
   out["router/prompt"] = routerPrompt.text;

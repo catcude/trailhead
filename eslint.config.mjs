@@ -9,6 +9,11 @@ const eslintConfig = defineConfig([
     rules: {
       // CLAUDE.md: TypeScript strict mode — no `any` types.
       "@typescript-eslint/no-explicit-any": "error",
+      // Underscore prefix marks intentionally unused args (interface stubs).
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
+      ],
     },
   },
   // Override default ignores of eslint-config-next.

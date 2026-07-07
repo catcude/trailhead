@@ -39,5 +39,6 @@ export async function completeOnboarding(formData: FormData) {
     .eq("id", user.id);
 
   if (error) redirect("/onboarding");
-  redirect("/dashboard");
+  // Offer Discover Your Path next — always skippable from there.
+  redirect("/onboarding/quiz");
 }
