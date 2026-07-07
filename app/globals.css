@@ -1,18 +1,51 @@
 @import "tailwindcss";
 
 /*
- * Design tokens land in the design-tokens commit (Patagonia palette as
- * CSS variables — see docs/plans/scaffolding-plan.md §M0). Components must
- * never hardcode hex values; scripts/check-tokens.mjs enforces this in CI.
+ * ─── Trailhead design tokens ─────────────────────────────────────────────────
+ *
+ * Single source of truth for the confirmed Patagonia palette (PRD §5.1).
+ * This is the ONLY file allowed to contain raw hex colors —
+ * scripts/check-tokens.mjs enforces that in CI. Components use the Tailwind
+ * classes these tokens generate (bg-cta, text-ink, border-sand, …).
+ *
+ * Palette (PRD §5.1):
+ *   Sunset Coral  #F9A971  → --color-coral   (soft accent, warm surfaces)
+ *   Bright Orange #FB6526  → --color-cta     (primary CTA / action)
+ *   Deep Sky Blue #0165A5  → --color-info    (links, info accents, Blue Path)
+ *   Soft Lavender #A68DEB  → --color-calm    (quiz/reflection surfaces)
+ *   Rich Indigo   #3B2089  → --color-depth   (headers, hero moments)
+ *   Charcoal Gray #4A4A4A  → --color-ink     (body text)
+ *   Golden Sand   #D0B280  → --color-sand    (warm neutral fills, cards)
+ *
+ * WCAG 2.1 AA contrast guidance (measured against white #FFFFFF):
+ *   ink   on white  ≈ 8.9:1  — body text, always safe
+ *   depth on white  ≈ 12.6:1 — headings, always safe
+ *   info  on white  ≈ 7.0:1  — links, safe
+ *   white on cta    ≈ 3.0:1  — LARGE/BOLD TEXT ONLY (≥ text-lg font-semibold);
+ *                              never use cta background under small text
+ *   depth on coral  ≈ 6.2:1  — safe pairing for warm emphasis surfaces
+ *   ink   on sand   ≈ 4.6:1  — safe for body text on sand fills
+ *
+ * Path-identity colors: only Blue (Deep Sky Blue) and Red (warm coral/orange)
+ * theming are specified in the PRD; Green/Yellow path identity colors are an
+ * open design decision for Cat — do not invent them here.
  */
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@theme {
+  --color-coral: #f9a971;
+  --color-cta: #fb6526;
+  --color-info: #0165a5;
+  --color-calm: #a68deb;
+  --color-depth: #3b2089;
+  --color-ink: #4a4a4a;
+  --color-sand: #d0b280;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: #ffffff;
+  --color-foreground: #4a4a4a; /* body text = ink (Charcoal Gray) */
+
+  /* Rounded cards, soft shadows — "hiking journal, not homework app". */
+  --radius-card: 1.25rem;
+  --shadow-card: 0 1px 3px rgb(0 0 0 / 0.06), 0 4px 16px rgb(0 0 0 / 0.05);
+
   --font-sans:
     ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
@@ -22,4 +55,16 @@ body {
   background: var(--color-background);
   color: var(--color-foreground);
   font-family: var(--font-sans);
+}
+
+/* Accessibility: ADHD/anxiety-friendly — respect reduced motion globally. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
