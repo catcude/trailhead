@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trailhead — The daily guide for students carrying too much</title>
+  <meta name="description" content="Trailhead is an adaptive daily guide that helps students regulate, build executive functioning skills, and keep up academically with one honest next step." />
+  <meta name="keywords" content="student support app, executive functioning app, nervous system regulation for students, academic support, SEL app, adaptive check-in" />
+  <meta property="og:title" content="Trailhead — The daily guide for students carrying too much" />
+  <meta property="og:description" content="An adaptive check-in that meets students where they are and gives them one honest next step." />
+  <meta property="og:type" content="website" />
+  <meta name="theme-color" content="#FB6526" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&f[]=cabinet-grotesk@500,700,800&display=swap" rel="stylesheet">
+  <style>
+    :root, [data-theme="light"] {
+      --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+      --text-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
+      --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+      --text-lg: clamp(1.125rem, 1rem + 0.75vw, 1.5rem);
+      --text-xl: clamp(1.5rem, 1.2rem + 1.25vw, 2.25rem);
+      --text-2xl: clamp(2rem, 1.2rem + 2.5vw, 3.5rem);
+      --text-3xl: clamp(2.5rem, 1rem + 4vw, 5rem);
+      --text-hero: clamp(3rem, 0.5rem + 7vw, 7rem);
+
+      --space-1: 0.25rem; --space-2: 0.5rem; --space-3: 0.75rem; --space-4: 1rem;
+      --space-5: 1.25rem; --space-6: 1.5rem; --space-8: 2rem; --space-10: 2.5rem;
+      --space-12: 3rem; --space-16: 4rem; --space-20: 5rem; --space-24: 6rem; --space-32: 8rem;
+
+      --color-bg: #fbfaf6;
+      --color-surface: #fffdf9;
+      --color-surface-2: #fff7ef;
+      --color-surface-offset: #f4ecdf;
+      --color-surface-offset-2: #eee2cf;
+      --color-surface-dynamic: #e4d4be;
+      --color-divider: rgba(59, 32, 137, 0.12);
+      --color-border: rgba(59, 32, 137, 0.16);
+      --color-text: #352f2b;
+      --color-text-muted: #6d645d;
+      --color-text-faint: #9e9286;
+      --color-text-inverse: #fff9f3;
+      --color-primary: #fb6526;
+      --color-primary-hover: #e25518;
+      --color-primary-active: #b74312;
+      --color-primary-highlight: rgba(249, 169, 113, 0.22);
+      --color-secondary: #0165a5;
+      --color-lavender: #a68deb;
+      --color-indigo: #3b2089;
+      --color-sand: #d0b280;
+      --radius-sm: 0.375rem; --radius-md: 0.75rem; --radius-lg: 1.125rem; --radius-xl: 1.5rem; --radius-full: 9999px;
+      --transition-interactive: 180ms cubic-bezier(0.16, 1, 0.3, 1);
+      --shadow-sm: 0 1px 2px rgba(59,32,137,0.06);
+      --shadow-md: 0 16px 40px rgba(59,32,137,0.1);
+      --shadow-lg: 0 28px 80px rgba(59,32,137,0.16);
+      --content-default: 1120px;
+      --font-display: 'Cabinet Grotesk', 'Trebuchet MS', sans-serif;
+      --font-body: 'Satoshi', 'Inter', sans-serif;
+    }
+    [data-theme="dark"] {
+      --color-bg: #17131a;
+      --color-surface: #201a24;
+      --color-surface-2: #281f2e;
+      --color-surface-offset: #2d2434;
+      --color-surface-offset-2: #382d41;
+      --color-surface-dynamic: #463955;
+      --color-divider: rgba(255,249,243,0.1);
+      --color-border: rgba(255,249,243,0.16);
+      --color-text: #f7efe7;
+      --color-text-muted: #d2c7be;
+      --color-text-faint: #9f938c;
+      --color-text-inverse: #241d2a;
+      --color-primary: #ff8a54;
+      --color-primary-hover: #ffa170;
+      --color-primary-active: #ffb28a;
+      --color-primary-highlight: rgba(249,169,113,0.18);
+      --color-secondary: #59a7dc;
+      --color-lavender: #beaaf5;
+      --color-indigo: #c9bff7;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.25);
+      --shadow-md: 0 16px 40px rgba(0,0,0,0.35);
+      --shadow-lg: 0 28px 80px rgba(0,0,0,0.45);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme]) {
+        --color-bg: #17131a; --color-surface: #201a24; --color-surface-2: #281f2e; --color-surface-offset: #2d2434; --color-surface-offset-2: #382d41; --color-surface-dynamic: #463955;
+        --color-divider: rgba(255,249,243,0.1); --color-border: rgba(255,249,243,0.16); --color-text: #f7efe7; --color-text-muted: #d2c7be; --color-text-faint: #9f938c; --color-text-inverse: #241d2a;
+        --color-primary: #ff8a54; --color-primary-hover: #ffa170; --color-primary-active: #ffb28a; --color-primary-highlight: rgba(249,169,113,0.18); --color-secondary: #59a7dc; --color-lavender: #beaaf5; --color-indigo: #c9bff7;
+      }
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{-webkit-font-smoothing:antialiased;scroll-behavior:smooth;text-rendering:optimizeLegibility;scroll-padding-top:6rem}
+    body{min-height:100dvh;line-height:1.6;font-family:var(--font-body);font-size:var(--text-base);color:var(--color-text);background:var(--color-bg);overflow-x:hidden}
+    img,svg,canvas{display:block;max-width:100%;height:auto}
+    a{text-decoration:none;color:inherit}
+    button,input,textarea,select{font:inherit;color:inherit}
+    h1,h2,h3{font-family:var(--font-display);line-height:1.02;letter-spacing:-0.03em}
+    p{max-width:70ch;color:var(--color-text-muted)}
+    :focus-visible{outline:2px solid var(--color-primary);outline-offset:3px;border-radius:var(--radius-sm)}
+    .skip-link{position:absolute;left:var(--space-4);top:-3rem;background:var(--color-primary);color:var(--color-text-inverse);padding:var(--space-3) var(--space-4);border-radius:var(--radius-full);z-index:1000}
+    .skip-link:focus{top:var(--space-4)}
+    .container{width:min(calc(100% - 2rem), var(--content-default));margin-inline:auto}
+    .section{padding-block:clamp(var(--space-16), 10vw, var(--space-24));position:relative}
+    .eyebrow{display:inline-flex;align-items:center;gap:var(--space-2);padding:0.5rem 0.875rem;border:1px solid var(--color-border);border-radius:var(--radius-full);font-size:var(--text-xs);text-transform:uppercase;letter-spacing:0.14em;color:var(--color-text)}
+    .eyebrow::before{content:"";width:0.5rem;height:0.5rem;border-radius:999px;background:var(--color-primary);box-shadow:0 0 0 6px var(--color-primary-highlight)}
+    .site-header{position:sticky;top:0;z-index:50;background:color-mix(in srgb, var(--color-bg) 78%, transparent);backdrop-filter:blur(18px);border-bottom:1px solid var(--color-divider)}
+    .nav{display:flex;align-items:center;justify-content:space-between;gap:var(--space-4);padding:var(--space-4) 0}
+    .brand{display:flex;align-items:center;gap:var(--space-3);font-weight:700}
+    .brand-mark{width:2.5rem;height:2.5rem;border-radius:0.9rem;background:linear-gradient(160deg,var(--color-primary),#f9a971 52%,var(--color-secondary));display:grid;place-items:center;box-shadow:var(--shadow-sm)}
+    .brand-mark svg{width:1.35rem;height:1.35rem;color:white}
+    .nav-links{display:flex;gap:var(--space-5);align-items:center;color:var(--color-text-muted);font-size:var(--text-sm)}
+    .nav-links a:hover{color:var(--color-text)}
+    .nav-actions{display:flex;gap:var(--space-3);align-items:center}
+    .theme-toggle,.ghost-btn,.primary-btn,.secondary-btn{min-height:44px;padding:0.85rem 1.1rem;border-radius:var(--radius-full);border:1px solid var(--color-border);transition:transform var(--transition-interactive),background var(--transition-interactive),border-color var(--transition-interactive),color var(--transition-interactive),box-shadow var(--transition-interactive)}
+    .theme-toggle:hover,.ghost-btn:hover,.primary-btn:hover,.secondary-btn:hover{transform:translateY(-1px)}
+    .primary-btn{background:var(--color-primary);color:var(--color-text-inverse);border-color:transparent;box-shadow:var(--shadow-sm)}
+    .primary-btn:hover{background:var(--color-primary-hover)}
+    .secondary-btn{background:var(--color-surface);color:var(--color-text);}
+    .ghost-btn{background:transparent}
+    .hero{padding-block:clamp(var(--space-12), 5vw, var(--space-24)) var(--space-20)}
+    .hero-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:clamp(var(--space-8),4vw,var(--space-16));align-items:center}
+    .hero-copy h1{font-size:var(--text-hero);max-width:11ch}
+    .hero-copy .lede{font-size:var(--text-lg);max-width:52ch;margin-top:var(--space-6);color:var(--color-text)}
+    .cta-row{display:flex;gap:var(--space-3);flex-wrap:wrap;margin-top:var(--space-8)}
+    .proof-row{display:flex;flex-wrap:wrap;gap:var(--space-5);margin-top:var(--space-6);color:var(--color-text-muted);font-size:var(--text-sm)}
+    .proof-row span{display:flex;align-items:center;gap:0.55rem}
+    .proof-row span::before{content:"";width:0.45rem;height:0.45rem;border-radius:999px;background:var(--color-secondary)}
+    .hero-stage{position:relative;min-height:640px}
+    .topo{position:absolute;inset:-10% -5% auto auto;width:min(40rem,95%);height:40rem;opacity:0.68;pointer-events:none;filter:drop-shadow(0 10px 40px rgba(59,32,137,.08))}
+    .topo svg{width:100%;height:100%}
+    .glass-panel{position:relative;background:color-mix(in srgb, var(--color-surface) 76%, transparent);border:1px solid var(--color-border);border-radius:var(--radius-xl);box-shadow:var(--shadow-lg);backdrop-filter:blur(20px)}
+    .hero-card{padding:var(--space-6);max-width:34rem;position:absolute;right:0;top:4rem;overflow:hidden}
+    .hero-card::before{content:"";position:absolute;inset:auto -20% -25% auto;width:15rem;height:15rem;background:radial-gradient(circle at center, rgba(249,169,113,.34), transparent 65%)}
+    .card-head{display:flex;align-items:center;justify-content:space-between;gap:var(--space-4);margin-bottom:var(--space-6)}
+    .card-title{font-size:var(--text-xl);max-width:12ch}
+    .chat-line{padding:var(--space-4);border-radius:1.25rem;background:var(--color-surface-2);border:1px solid color-mix(in srgb, var(--color-border) 70%, transparent);margin-bottom:var(--space-3)}
+    .chat-line.ai{background:linear-gradient(180deg, color-mix(in srgb, var(--color-primary-highlight) 65%, var(--color-surface)) 0%, var(--color-surface) 100%)}
+    .chip-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-3);margin-top:var(--space-5)}
+    .choice{padding:1rem;border-radius:1rem;border:1px solid var(--color-border);background:var(--color-surface);text-align:left;cursor:pointer;min-height:70px}
+    .choice.active{border-color:var(--color-primary);background:color-mix(in srgb, var(--color-primary-highlight) 65%, var(--color-surface));box-shadow:0 0 0 3px rgba(251,101,38,.1)}
+    .response-box{margin-top:var(--space-5);padding:var(--space-5);border-radius:1rem;background:var(--color-indigo);color:var(--color-text-inverse)}
+    .response-box p{color:rgba(255,249,243,.86)}
+    .ridge-card{position:absolute;left:0;bottom:2.5rem;width:min(22rem, 72%);padding:var(--space-5);background:linear-gradient(180deg,color-mix(in srgb, var(--color-surface-offset) 80%, transparent), color-mix(in srgb, var(--color-surface) 88%, transparent));border:1px solid var(--color-border);border-radius:var(--radius-xl);box-shadow:var(--shadow-md)}
+    .ridge-card h3{font-size:var(--text-lg);font-family:var(--font-body);letter-spacing:-0.02em;line-height:1.15}
+    .stat-grid,.pillar-grid,.path-grid,.audience-grid,.steps-grid,.quote-grid{display:grid;gap:var(--space-4)}
+    .stat-grid{grid-template-columns:repeat(4,1fr);margin-top:var(--space-10)}
+    .stat-card,.pillar,.path-card,.audience-card,.step,.quote-card,.pricing-card,.community-card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-xl);box-shadow:var(--shadow-sm)}
+    .stat-card{padding:var(--space-5);background:linear-gradient(180deg,var(--color-surface),color-mix(in srgb, var(--color-primary-highlight) 40%, var(--color-surface)))}
+    .stat-card strong{display:block;font-size:var(--text-xl);font-family:var(--font-display);color:var(--color-indigo)}
+    .section-head{display:grid;gap:var(--space-4);margin-bottom:var(--space-10)}
+    .section-head h2{font-size:var(--text-3xl);max-width:10ch}
+    .pillar-grid{grid-template-columns:1.15fr 0.85fr 0.85fr}
+    .pillar{padding:var(--space-6)}
+    .pillar p{margin-top:var(--space-3)}
+    .big-story{background:linear-gradient(180deg, color-mix(in srgb, var(--color-surface) 90%, transparent), color-mix(in srgb, var(--color-primary-highlight) 55%, var(--color-surface)))}
+    .path-grid{grid-template-columns:repeat(4,1fr)}
+    .path-card{padding:var(--space-5);position:relative;overflow:hidden;isolation:isolate}
+    .path-card::after{content:"";position:absolute;inset:auto -2rem -2rem auto;width:8rem;height:8rem;border-radius:999px;opacity:.18;background:var(--path-accent);z-index:-1}
+    .path-card[data-path="green"]{--path-accent:#77aa63}
+    .path-card[data-path="yellow"]{--path-accent:#f9a971}
+    .path-card[data-path="blue"]{--path-accent:#0165a5}
+    .path-card[data-path="red"]{--path-accent:#fb6526}
+    .path-card h3{font-size:var(--text-xl)}
+    .path-tag{display:inline-flex;padding:0.35rem 0.7rem;border-radius:999px;background:color-mix(in srgb, var(--path-accent) 12%, var(--color-surface));font-size:var(--text-xs);text-transform:uppercase;letter-spacing:.12em;color:var(--color-text)}
+    .audience-grid{grid-template-columns:repeat(3,1fr)}
+    .audience-card,.community-card,.pricing-card,.quote-card,.step{padding:var(--space-6)}
+    .steps-grid{grid-template-columns:repeat(3,1fr)}
+    .step-number{display:inline-flex;width:2.4rem;height:2.4rem;border-radius:999px;align-items:center;justify-content:center;background:var(--color-primary-highlight);color:var(--color-primary);font-weight:700;margin-bottom:var(--space-4)}
+    .sample-shell{display:grid;grid-template-columns:0.95fr 1.05fr;gap:var(--space-6);padding:var(--space-6);border-radius:var(--radius-xl);background:linear-gradient(180deg,var(--color-surface),var(--color-surface-2));border:1px solid var(--color-border);box-shadow:var(--shadow-md)}
+    .sample-column{display:grid;gap:var(--space-4)}
+    .mini-bubble{padding:var(--space-4);border-radius:1rem;background:var(--color-surface);border:1px solid var(--color-border)}
+    .mini-bubble strong{display:block;color:var(--color-text);margin-bottom:0.35rem}
+    .quote-grid{grid-template-columns:1fr 1fr}
+    blockquote{font-size:var(--text-lg);color:var(--color-text);line-height:1.45}
+    .community-grid,.pricing-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--space-4)}
+    .pricing-card.featured{background:linear-gradient(180deg, color-mix(in srgb, var(--color-primary-highlight) 70%, var(--color-surface)), var(--color-surface));transform:translateY(-0.35rem)}
+    .pricing-card ul,.community-card ul{list-style:none;display:grid;gap:var(--space-3);margin-top:var(--space-5);color:var(--color-text-muted)}
+    .pricing-card li::before,.community-card li::before{content:"↗";margin-right:0.6rem;color:var(--color-primary)}
+    .final-cta{overflow:hidden}
+    .final-cta .container{position:relative}
+    .cta-panel{padding:clamp(var(--space-8),5vw,var(--space-16));border-radius:calc(var(--radius-xl) * 1.15);background:linear-gradient(135deg, var(--color-indigo), color-mix(in srgb, var(--color-indigo) 72%, var(--color-secondary)));color:var(--color-text-inverse);position:relative;box-shadow:var(--shadow-lg)}
+    .cta-panel::before,.cta-panel::after{content:"";position:absolute;border-radius:999px;filter:blur(2px)}
+    .cta-panel::before{width:18rem;height:18rem;right:-4rem;top:-5rem;background:rgba(249,169,113,.2)}
+    .cta-panel::after{width:14rem;height:14rem;left:-2rem;bottom:-4rem;background:rgba(89,167,220,.18)}
+    .cta-panel p{color:rgba(255,249,243,.82)}
+    .footer{padding:var(--space-8) 0 var(--space-12);color:var(--color-text-muted)}
+    .footer-bar{display:flex;justify-content:space-between;gap:var(--space-4);align-items:center;border-top:1px solid var(--color-divider);padding-top:var(--space-6)}
+    .mountain-line{position:absolute;left:0;right:0;bottom:-1px;height:120px;opacity:.9;pointer-events:none}
+    .fade-up{opacity:0;transform:translateY(24px);transition:opacity .8s ease, transform .8s ease}
+    .fade-up.in-view{opacity:1;transform:none}
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    @media (max-width: 1080px){
+      .hero-grid,.sample-shell,.pillar-grid,.steps-grid,.path-grid,.audience-grid,.community-grid,.pricing-grid,.quote-grid,.stat-grid{grid-template-columns:1fr 1fr}
+      .hero-stage{min-height:auto;padding-bottom:20rem}
+      .hero-card{position:relative;top:auto;right:auto;max-width:none}
+      .ridge-card{left:auto;right:0;bottom:1rem}
+    }
+    @media (max-width: 760px){
+      .nav{align-items:flex-start;flex-direction:column}
+      .nav-links{flex-wrap:wrap}
+      .hero-grid,.sample-shell,.pillar-grid,.steps-grid,.path-grid,.audience-grid,.community-grid,.pricing-grid,.quote-grid,.stat-grid{grid-template-columns:1fr}
+      .hero-copy h1{max-width:12ch}
+      .hero-stage{padding-bottom:0;min-height:auto}
+      .topo,.ridge-card{display:none}
+      .hero-card{position:relative;margin-top:var(--space-8)}
+      .chip-grid{grid-template-columns:1fr}
+      .footer-bar{flex-direction:column;align-items:flex-start}
+    }
+    @media (prefers-reduced-motion: reduce){
+      *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+      .fade-up{opacity:1;transform:none}
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#content">Skip to content</a>
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="#top" aria-label="Trailhead home">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 17.5 8.5 8l3.2 5 2.8-4.5L21 17.5" />
+            <path d="M3 18h18" />
+          </svg>
+        </span>
+        <span>Trailhead</span>
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="#why">Why it exists</a>
+        <a href="#paths">Paths</a>
+        <a href="#how">How it works</a>
+        <a href="#community">Community</a>
+        <a href="#pricing">Pricing</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch theme">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        </button>
+        <a class="secondary-btn" href="#sample">See the check-in</a>
+        <a class="primary-btn" href="#cta">Try Trailhead</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="content">
+    <section class="hero section" id="top">
+      <div class="container hero-grid">
+        <div class="hero-copy fade-up">
+          <span class="eyebrow">Adaptive support for students</span>
+          <h1>The daily guide for students carrying too much.</h1>
+          <p class="lede">Trailhead helps students regulate, build executive functioning skills, and keep up academically without talking down to them. It meets the real day they are having, then gives them one clear next step they can actually do.</p>
+          <div class="cta-row">
+            <a class="primary-btn" href="#cta">Try it now</a>
+            <a class="ghost-btn" href="#why">Why students stay</a>
+          </div>
+          <div class="proof-row" aria-label="Key proof points">
+            <span>Adaptive daily check-ins under five minutes</span>
+            <span>Science underneath, plain language on top</span>
+            <span>No dark patterns. Easy cancellation.</span>
+          </div>
+        </div>
+        <div class="hero-stage fade-up" aria-hidden="false">
+          <div class="topo">
+            <svg viewBox="0 0 600 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M74 134c65-48 126-41 188-9s126 33 192-3" stroke="rgba(1,101,165,.22)" stroke-width="2"/>
+              <path d="M49 188c87-59 163-54 243-12 79 41 156 42 260-12" stroke="rgba(59,32,137,.18)" stroke-width="2"/>
+              <path d="M26 246c111-68 212-66 300-16 87 49 171 55 259 3" stroke="rgba(251,101,38,.18)" stroke-width="2"/>
+              <path d="M36 304c102-44 186-44 273 1 86 45 180 51 263 9" stroke="rgba(166,141,235,.2)" stroke-width="2"/>
+              <path d="M58 360c89-37 165-36 241 2 77 38 160 43 238 6" stroke="rgba(1,101,165,.18)" stroke-width="2"/>
+              <path d="M90 415c71-27 134-26 199 1 66 28 136 29 210-3" stroke="rgba(59,32,137,.15)" stroke-width="2"/>
+            </svg>
+          </div>
+          <div class="hero-card glass-panel">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow" style="margin-bottom: .9rem;">A taste of Guidepost</p>
+                <h2 class="card-title">What is at the top of your mind today?</h2>
+              </div>
+              <span style="font-size:var(--text-sm);color:var(--color-text-muted)">Juniper is listening</span>
+            </div>
+            <div class="chat-line ai"><strong>Juniper</strong><br>We do not have to solve your whole life right now. Start with the shape of today.</div>
+            <div class="chip-grid" role="list" aria-label="Check-in choices">
+              <button class="choice active" data-response="You sound stretched thin, not lazy. Let's shrink the day down until it feels possible again.">I know what to do, but I cannot start.</button>
+              <button class="choice" data-response="You might not need more pressure. You might need something honest enough to help you come back online.">I am fine, but kind of numb.</button>
+              <button class="choice" data-response="If your body is carrying too much, planning comes second. We can check food, sleep, and breathing first.">Everything feels loud.</button>
+              <button class="choice" data-response="Good. We can use that energy without pretending your day is infinite.">I actually have some energy today.</button>
+            </div>
+            <div class="response-box" id="adaptive-response" aria-live="polite">
+              <strong style="display:block;margin-bottom:.45rem;">Adaptive reflection</strong>
+              <p>You sound stretched thin, not lazy. Let's shrink the day down until it feels possible again.</p>
+            </div>
+          </div>
+          <div class="ridge-card">
+            <h3>Not therapy. Not a homework app. A guide that sees the whole picture.</h3>
+            <p style="margin-top:var(--space-3)">Regulation, executive function, and academics live together here because real student struggle does too.</p>
+          </div>
+        </div>
+      </div>
+      <div class="container stat-grid fade-up">
+        <article class="stat-card"><strong>4 paths</strong><p>Green, Yellow, Blue, and Red routes shaped by state, energy, and need.</p></article>
+        <article class="stat-card"><strong>&lt; 5 min</strong><p>A mobile-first daily check-in designed to feel doable on hard days.</p></article>
+        <article class="stat-card"><strong>14+</strong><p>Student-facing language built to feel safe and understandable to a stressed teen.</p></article>
+        <article class="stat-card"><strong>2 taps</strong><p>Transparent cancellation promise, because support should not feel like a trap.</p></article>
+      </div>
+    </section>
+
+    <section class="section" id="why">
+      <div class="container">
+        <div class="section-head fade-up">
+          <span class="eyebrow">Why it exists</span>
+          <h2>When a student is overwhelmed, discipline is not a strategy.</h2>
+          <p>Trailhead was built around a simple truth: school performance often says very little about capability when a student is dysregulated, hungry, scared, burned out, or carrying too much alone. The product exists to interrupt that cycle with honest support, practical tools, and a way forward that does not shame the person living it.</p>
+        </div>
+        <div class="pillar-grid fade-up">
+          <article class="pillar big-story">
+            <h3>Whole-person support</h3>
+            <p>Most competitors pick one lane. Trailhead connects academics, nervous system regulation, and executive functioning in one experience, because that is how struggle actually shows up in real life.</p>
+          </article>
+          <article class="pillar">
+            <h3>Safe, not soft</h3>
+            <p>Juniper speaks in a warm, direct, non-clinical voice. The product never lectures, never promises a magic wand, and never talks down to students.</p>
+          </article>
+          <article class="pillar">
+            <h3>Accessible on purpose</h3>
+            <p>Pricing is designed to stay transparent and affordable enough for schools and families. No dark patterns, no manipulative upsells, no shame around leaving.</p>
+          </article>
+        </div>
+      </div>
+      <svg class="mountain-line" viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 110 213 46l120 40 177-57 146 52 156-69 147 59 123-37 202 62V120H0Z" fill="color-mix(in srgb, var(--color-primary-highlight) 40%, transparent)" />
+        <path d="M0 106 213 44l120 37 177-54 146 49 156-66 147 56 123-34 202 59" stroke="rgba(251,101,38,.22)" stroke-width="2" />
+      </svg>
+    </section>
+
+    <section class="section" id="paths">
+      <div class="container">
+        <div class="section-head fade-up">
+          <span class="eyebrow">Adaptive paths</span>
+          <h2>Four ways in, one honest goal.</h2>
+          <p>Every student does not need the same tone, the same prompt, or the same tool. Trailhead routes users into the path that fits the day they are actually having, then helps them leave with one visible next move.</p>
+        </div>
+        <div class="path-grid fade-up">
+          <article class="path-card" data-path="green">
+            <span class="path-tag">Green path</span>
+            <h3>Intention to alignment</h3>
+            <p>For days with energy and clarity. It turns momentum into structure through sorting, planning, habit pairing, and reflection.</p>
+          </article>
+          <article class="path-card" data-path="yellow">
+            <span class="path-tag">Yellow path</span>
+            <h3>Stuck to steady</h3>
+            <p>For students who know what to do but cannot start. It breaks through overload, procrastination, frozen energy, and mental clutter.</p>
+          </article>
+          <article class="path-card" data-path="blue">
+            <span class="path-tag">Blue path</span>
+            <h3>Disconnection to awareness</h3>
+            <p>For the “I’m fine” days that are not really fine. It uses gentle scans and small prompts to help students notice what is going on underneath.</p>
+          </article>
+          <article class="path-card" data-path="red">
+            <span class="path-tag">Red path</span>
+            <h3>Overwhelm to ownership</h3>
+            <p>For emotionally flooded or shut-down moments. It begins with regulation and basic needs before asking the brain to plan anything at all.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="how">
+      <div class="container">
+        <div class="section-head fade-up">
+          <span class="eyebrow">How it works</span>
+          <h2>A guided rhythm, not a blank chatbot.</h2>
+          <p>Guidepost is structured on purpose. Instead of dropping students into an open-ended chat, Trailhead walks them through a six-stage rhythm that keeps support grounded, consistent, and action-oriented.</p>
+        </div>
+        <div class="steps-grid fade-up">
+          <article class="step"><span class="step-number">1</span><h3>Meet the state</h3><p>Name what is present first, whether it is energy, fog, stress, or shutdown.</p></article>
+          <article class="step"><span class="step-number">2</span><h3>Match the support</h3><p>Juniper adjusts tone and route based on the student’s emotional reality, not an idealized version of the day.</p></article>
+          <article class="step"><span class="step-number">3</span><h3>Leave with one next step</h3><p>The check-in closes with one visible action, reflection, or reset that feels realistic enough to do.</p></article>
+        </div>
+
+        <div class="sample-shell fade-up" id="sample" style="margin-top:var(--space-10)">
+          <div class="sample-column">
+            <span class="eyebrow">Sample exchange</span>
+            <h3 style="font-size:var(--text-2xl)">A small moment of reflection before signup.</h3>
+            <p>The landing page itself should let visitors feel seen before asking them to commit. This section mirrors that with a simple exchange modeled after the Yellow path, where knowing what to do is not the same as being able to begin.</p>
+          </div>
+          <div class="sample-column">
+            <div class="mini-bubble"><strong>Student</strong>I have the assignment open. I still cannot make myself touch it.</div>
+            <div class="mini-bubble"><strong>Juniper</strong>That does not sound like laziness. It sounds like something in the way. Want to figure out if this is overwhelm, fear, or just too big to hold all at once?</div>
+            <div class="mini-bubble"><strong>Next move</strong>Pick one: quick hit, chunk it down, or full sprint. Then start with a step under two minutes.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="section-head fade-up">
+          <span class="eyebrow">Who it serves</span>
+          <h2>Built for the student first, with room for the adults around them.</h2>
+          <p>Trailhead centers the student who has tried and still cannot figure out how to move forward, while also creating support layers for burned-out high achievers, stretched-thin parents, and teachers who need something scalable and humane.</p>
+        </div>
+        <div class="audience-grid fade-up">
+          <article class="audience-card"><h3>Students who have tried</h3><p>They need hope, honesty, and a place where they do not have to pretend before they can begin again.</p></article>
+          <article class="audience-card"><h3>High achievers in quiet burnout</h3><p>They often look successful on paper while their inner pace, emotions, and priorities are falling apart underneath.</p></article>
+          <article class="audience-card"><h3>Parents and teachers</h3><p>They need visibility into healthy support tools and a shared language that helps without becoming surveillance.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="community">
+      <div class="container">
+        <div class="section-head fade-up">
+          <span class="eyebrow">Community</span>
+          <h2>Support should not stop at the check-in.</h2>
+          <p>Trailhead is designed to grow into intentional spaces for students, parents, and teachers, with overlap where it helps and privacy where it matters. The goal is not growth hacking. It is building a place where people feel less alone and more equipped.</p>
+        </div>
+        <div class="community-grid fade-up">
+          <article class="community-card">
+            <h3>What starts in phase one</h3>
+            <ul>
+              <li>Adaptive check-ins with Green and Yellow paths</li>
+              <li>Reflection capture, habit tools, and a daily rhythm</li>
+              <li>Safety-aware support with human-help escalation boundaries</li>
+            </ul>
+          </article>
+          <article class="community-card">
+            <h3>What the platform grows into</h3>
+            <ul>
+              <li>Separate containers for students, parents, and teachers</li>
+              <li>Shared overlap spaces with role-aware visibility</li>
+              <li>Future tutor matching shaped by communication style and need</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="section-head fade-up">
+          <span class="eyebrow">Why it feels different</span>
+          <h2>Real over polished.</h2>
+          <p>The strongest brand signal in the source material is not a slogan. It is the feeling students describe when they say, “You’re so real. You get it. I don’t have to pretend.” This page carries that same posture: reflective, grounded, direct, and never exploitative.</p>
+        </div>
+        <div class="quote-grid fade-up">
+          <article class="quote-card">
+            <blockquote>“You’re not broken. Feeling stuck doesn’t mean you’re lazy. It just means something is in the way.”</blockquote>
+            <p style="margin-top:var(--space-4)">The voice is collaborative, warm, and steady under pressure.</p>
+          </article>
+          <article class="quote-card">
+            <blockquote>“Growth is uncomfortable. Trailhead is a guide, not a magic wand.”</blockquote>
+            <p style="margin-top:var(--space-4)">That honesty matters because students can feel fake hope immediately.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="pricing">
+      <div class="container">
+        <div class="section-head fade-up">
+          <span class="eyebrow">Pricing</span>
+          <h2>Transparent enough to trust.</h2>
+          <p>Support products lose people when they feel like traps. Trailhead counters that directly with a genuinely useful free tier, a clear paid path, and cancellation that should take less than a minute.</p>
+        </div>
+        <div class="pricing-grid fade-up">
+          <article class="pricing-card">
+            <h3>Free</h3>
+            <p style="margin-top:var(--space-2);font-size:var(--text-lg);color:var(--color-text)">A real starting point.</p>
+            <ul>
+              <li>Daily adaptive check-in with a generous limit</li>
+              <li>Core reflections and essential habit support</li>
+              <li>Enough value to know whether it helps before paying</li>
+            </ul>
+          </article>
+          <article class="pricing-card featured">
+            <h3>Paid</h3>
+            <p style="margin-top:var(--space-2);font-size:var(--text-lg);color:var(--color-text)">Unlimited support, no tricks.</p>
+            <ul>
+              <li>Unlimited Guidepost conversations</li>
+              <li>Full dashboard tools, history, and community access</li>
+              <li>Easy cancel promise with no retention dark patterns</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section final-cta" id="cta">
+      <div class="container fade-up">
+        <div class="cta-panel">
+          <span class="eyebrow" style="border-color:rgba(255,249,243,.18);color:var(--color-text-inverse)">Low-pressure call to action</span>
+          <h2 style="font-size:var(--text-3xl);margin-top:var(--space-5);max-width:10ch">Try it. No tricks. No pressure.</h2>
+          <p style="margin-top:var(--space-4);max-width:44ch">Start with one reflective check-in and see whether Trailhead feels like a real guide for your day. The page should earn trust before it asks for anything bigger.</p>
+          <div class="cta-row" style="margin-top:var(--space-8)">
+            <a class="primary-btn" href="#top">Start the check-in</a>
+            <a class="secondary-btn" href="#community">See the roadmap</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-bar">
+      <p>Trailhead is an adaptive daily support app designed to help students feel seen, grounded, and able to move forward.</p>
+      <p>Built for mobile-first clarity, accessibility, and honest trust.</p>
+    </div>
+  </footer>
+
+  <script>
+    (function(){
+      const toggle=document.querySelector('[data-theme-toggle]');
+      const root=document.documentElement;
+      let theme=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
+      root.setAttribute('data-theme', theme);
+      const icon=(mode)=>mode==='dark'
+        ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path></svg>'
+        : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
+      toggle.innerHTML=icon(theme);
+      toggle.addEventListener('click',()=>{
+        theme=theme==='dark'?'light':'dark';
+        root.setAttribute('data-theme', theme);
+        toggle.innerHTML=icon(theme);
+        toggle.setAttribute('aria-label','Switch to '+(theme==='dark'?'light':'dark')+' mode');
+      });
+
+      const choices=[...document.querySelectorAll('.choice')];
+      const response=document.querySelector('#adaptive-response p');
+      choices.forEach(choice=>{
+        choice.addEventListener('click',()=>{
+          choices.forEach(btn=>btn.classList.remove('active'));
+          choice.classList.add('active');
+          response.textContent=choice.dataset.response;
+        });
+      });
+
+      const observer=new IntersectionObserver((entries)=>{
+        entries.forEach(entry=>{
+          if(entry.isIntersecting){ entry.target.classList.add('in-view'); }
+        });
+      },{threshold:0.12});
+      document.querySelectorAll('.fade-up').forEach(el=>observer.observe(el));
+    })();
+  </script>
+</body>
+</html>
