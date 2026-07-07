@@ -11,7 +11,7 @@ brand-voice-report.md — Cat's voice, derived from her Blueprint Session Q&A
 paths/green-path.md — From Intention to Alignment (full dialogue flow, tone cheat sheet, storyboard)
 paths/yellow-path.md — From Stuck to Steady (five adaptive branches)
 paths/blue-path.md — From Disconnection to Awareness (the "I'm fine" path)
-paths/red-path.md — Emotional processing path (spec incomplete — do not build without Cat's source doc and safety review)
+paths/red-path.md — From Overwhelm to Ownership (spec complete per Cat, 2026-07-07 — repeated sections in the file are text duplication only; feature-flagged off and cannot ship without a dedicated safety review)
 tools/reusable-tools.md — master list of in-dialogue and dashboard tools
 The path documents contain Cat's authored dialogue, prompts, and reflection quotes. This content is her IP, prepared for copyright protection. Treat it as canonical content — implement it verbatim, never paraphrase or "improve" it without her approval.
 Tech Stack
@@ -76,9 +76,9 @@ Phase 1
 Blue — From Disconnection to Awareness
 Says "I'm fine"; flat, autopilot, masking
 Phase 2
-Red — Emotional processing
+Red — From Overwhelm to Ownership
 Is carrying something heavy
-Phase 2 — blocked on source doc + safety review
+Phase 2 — spec complete; feature-flagged, blocked on safety review
 
 Paths are permeable: Blue Stage 3 routes to Yellow (head full), Red (heart loud), or stays Blue. Implement the fallback logic exactly as specified in the path docs ("I don't know" flips the prompt; "nothing sounds right" offers a micro-reset; still stuck re-anchors to Weekly Horizon).
 Juniper's tone system
@@ -121,7 +121,7 @@ Pricing: Transparent freemium with an explicit easy-cancel promise.
 CTA: Low-pressure. Referral incentive appears post-signup, never as a gate.
 Design Principles
 Grounded, not flashy. Steady and trustworthy. No neon gradients, no dark-mode-by-default.
-Warm neutrals + trail-green accent. "Trailhead" evokes nature — nod to it without being literal.
+Patagonia palette (confirmed in the PRD §5.1): Sunset Coral #F9A971 + Bright Orange #FB6526 as primary accents, with Deep Sky Blue, Soft Lavender, Rich Indigo, Charcoal Gray, Golden Sand. "Trailhead" evokes nature — adventure guide, not ed-tech. (An earlier warm-neutrals/trail-green direction was superseded.)
 Typography with personality. Approachable but not childish; serves teens and adults. Highly readable body text.
 Breathing room. Generous whitespace; the design itself should feel calming to a dysregulated user.
 Mobile-first. Every flow excellent at 375px; check-in one-thumb operable.
