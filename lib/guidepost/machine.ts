@@ -114,6 +114,9 @@ function present(
     stage: current.stage,
     toneTag: current.tone,
     tip: current.tip,
+    fallbacks: current.fallbacks
+      ? (Object.keys(current.fallbacks) as EngineOutput["fallbacks"])
+      : undefined,
     done: nextState.done,
   };
 

@@ -7,9 +7,15 @@ import type { NextConfig } from "next";
  * 'unsafe-inline' is required by Next.js inline runtime scripts/styles;
  * tightening to nonce-based CSP is tracked in docs/security.md.
  */
+// React needs eval() for dev-mode debugging only; production stays strict.
+const scriptSrc =
+  process.env.NODE_ENV === "development"
+    ? "script-src 'self' 'unsafe-inline' 'unsafe-eval'"
+    : "script-src 'self' 'unsafe-inline'";
+
 const CSP = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline'",
+  scriptSrc,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
   "font-src 'self'",

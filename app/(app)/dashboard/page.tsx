@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Card } from "@/components/ui/card";
@@ -43,9 +44,15 @@ export default async function DashboardPage() {
 
       <Card>
         <h2 className="mb-1 font-semibold text-depth">Daily check-in</h2>
-        <p className="text-sm">
-          Guidepost is on its way — the check-in lands here first.
+        <p className="mb-3 text-sm">
+          A few minutes with Juniper — meet the day where you actually are.
         </p>
+        <Link
+          href="/checkin"
+          className="inline-flex min-h-11 items-center justify-center rounded-full bg-cta px-6 py-2.5 text-lg font-semibold text-white transition-colors hover:bg-cta/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-depth"
+        >
+          Start today’s check-in
+        </Link>
       </Card>
 
       <Card>

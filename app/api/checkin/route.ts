@@ -312,6 +312,7 @@ function sse(output: EngineOutput, sessionId: string): Response {
         tool: output.tool ?? null,
         quotes: output.quotes ?? null,
         tip: output.tip ?? null,
+        fallbacks: output.fallbacks ?? null,
         freeText: output.freeText,
         done: output.done,
       });

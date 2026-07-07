@@ -40,6 +40,8 @@ export interface EngineOutput {
   /** Present when the current node offers a reflection quote pick. */
   quotes?: string[];
   tip?: Tip;
+  /** Fallback escape hatches the current node declares. */
+  fallbacks?: FallbackKind[];
   /** The current node accepts free text. */
   freeText: boolean;
   stage: number;
