@@ -1,0 +1,339 @@
+Trailhead
+Product Requirements Document — v1.0
+July 2026 • Founder: Cat Cude • Guidepost adaptive support system, landing page, and community platform
+This PRD consolidates the Parker L Corp Blueprint Session (Steady Build Q&A), the Trailhead Brand
+Voice Report, the project CLAUDE.md, the four Guidepost path design documents (Green, Yellow, Blue,
+Red), and the Guidepost Reusable Tools master list into a single build specification.
+1. Overview & Vision
+Trailhead is an adaptive daily support app for students (with parent and teacher layers) that combines
+nervous system regulation, executive functioning, and academic support in one experience. The heart of
+the product is Guidepost, a structured adaptive dialogue system fronted by Juniper, a warm, honest
+guide character. Guidepost meets each user where they actually are — energized, stuck, numb, or
+emotionally heavy — and routes them down a matched path built on peer-reviewed frameworks.
+The founding insight: a student's school performance often has little to do with capability and everything
+to do with regulation and unmet needs. A kid who is hungry or scared cannot learn multiplication facts.
+Trailhead is designed as the affordable, judgment-free interruption to that cycle — a guide, a place to be
+heard, and a mirror that helps students see themselves and their situations more clearly.
+1.1 Product Pillars
+• Adaptive, not generic. Dialogue branches by emotional state, energy, and need. Tone shifts with
+the user.
+• Science underneath, plain language on top. Maslow, CASEL SEL, Covey quadrants, Atomic
+Habits, and behavioral science drive the logic; the user never gets a lecture. Regulation is taught
+“without calling it that.”
+• Whole-picture. Academics, emotion, and executive function are treated together, never separated.
+• Equitable by design. Cheap enough for schools to give every student. No dark patterns, easy
+cancellation.
+• A guide, not a magic wand. The product is honest that growth is uncomfortable; it structures the
+discomfort rather than promising to remove it.
+1.2 Goals & Non-Goals
+Goals
+• Ship a mobile-first web app where a student can complete a daily adaptive check-in in under 5
+minutes and leave with one clear, realistic next step.
+• Make every visitor to the landing page “see their reflection” before signup via an adaptive, interactive
+hero moment.
+• Establish community containers for students, parents, and teachers with intentional overlap spaces.
+• Build a safety layer that recognizes “deep water” and routes users to human help without shame.
+Non-Goals (v1)
+• Trailhead is not therapy and does not diagnose, treat, or replace counseling.
+• No native iOS/Android apps in Phase 1 (PWA-quality responsive web instead).
+• No open-ended, unbounded chatbot: Guidepost is a structured, path-based dialogue with
+LLM-assisted adaptivity, not a blank chat window.
+• Tutor matching is Phase 3, not v1.
+2. Users & Personas
+Persona Situation What they need from Trailhead
+The student who has
+tried (primary)
+Genuinely wants to do better; can't
+figure out how. May carry trauma,
+instability, or unmet basic needs.
+Hope. Feet on the ground. A place to be
+honest without judgment or fear, and one
+doable next step.
+The burned-out high
+achiever
+Has structure and success on paper;
+core self is not well. Performs instead
+of lives.
+Tools to manage mind, emotions, pacing,
+and priorities before the crash.
+The parent Stretched thin, worried, feels
+voiceless against the phone.
+Reassurance, visibility into healthy tools
+(not surveillance), and community with
+other parents.
+The teacher / school Sees dysregulated students daily;
+lacks scalable support tools.
+An affordable, evidence-informed
+resource every student can use; a
+teacher community container.
+Age & audience note: primary users are teens; adults (parents, teachers, adult learners) are supported.
+All student-facing language must be understandable to a 14-year-old and feel safe to a stressed one.
+3. Core Experience: The Guidepost Daily Check-In
+The daily check-in is the product's spine. Juniper opens with a low-pressure prompt, reads the user's
+state, and routes to one of four paths. Every path follows the same six-stage skeleton so users build a
+familiar rhythm while the content adapts.
+3.1 Universal Six-Stage Skeleton
+• Stage 1 — Meet the state. Name what's present (top of mind, type of stuck, or surface scan).
+• Stage 2 — Address it. Adaptive branch: sort, ground, reset, or gently probe based on Stage 1.
+• Stage 3 — Time & energy reality check. Plan against real time and real energy, not ideals.
+• Stage 4 — Calendar alignment. Buffer, remove, pair with ritual, or block time. “Matching your plan to
+your actual day is a power move, not a compromise.”
+• Stage 5 — Emotional readiness + first step. Check-in calibrates Juniper's tone; user picks a visible
+first step (under 2 minutes).
+• Stage 6 — Reflect & reinforce. Outcome-matched reflection quotes, Aha! moment capture, optional
+habit stacking; evening variant winds down and preps tomorrow.
+3.2 The Four Paths
+Path For the user who... Signature mechanics
+Green — From
+Intention to Alignment
+Starts the day with energy
+and clarity; wants goals
+aligned with values and real
+responsibilities.
+Mind scan + Covey quadrant sort; Weekly
+Horizon alignment; time-blocking / Pomodoro
+pop-outs; plan-change processing (“want to walk
+through WHY we changed this?”); habit stacking;
+standard vs. evening reflection sets.
+Yellow — From Stuck
+to Steady
+Knows what to do but can't
+start.
+Five adaptive branches: Physical (body reset),
+Emotional (ground or carry with care), Overload
+(brain dump + Covey sort + Zoom-Out),
+Procrastination (name the resistance: fear of
+failure / perfectionism / boredom; micro-starts),
+Frozen (one tiny action). Quick Hit / Chunk It / Full
+Sprint energy sizing.
+Blue — From
+Disconnection to
+Awareness
+Says “I'm fine”; emotionally
+flat, on autopilot, or
+masking.
+Surface scan that respects “fine”;
+metaphor-based vibe check (numb, autopilot,
+boxed in, faking it, managing); head/heart/body
+mismatch moment with optional path shifts;
+Micro-Needs Menu; gentle closure or re-entry.
+Red — From
+Overwhelm to
+Ownership
+Feels overwhelmed,
+emotionally flooded, or shut
+down.
+Regulation first: Stage 1 checks physical needs
+(sleep, food, hydration, overstimulation) before
+anything cognitive; Stage 1B emotional/social
+check-in (alone, ashamed, scattered); Stage 2
+names the biggest weight; Stage 3 branches —
+ready to plan (name 1–3 priorities) vs. Mini Reset
+(ask-for-help scripts, “is this deadline actually
+real?”, re-entry point); optional regulated shift to
+Green/Yellow; Stage 4 Covey sort (Do Now / Do
+Later / Delegate / Drop); Stage 5 reality check +
+re-scope; Stage 6 resilience reflections (“I was
+paralyzed — but I moved forward”). Tightest
+integration with the safety/escalation layer.
+Paths are permeable: Blue can hand off to Yellow (head full), Red (heart loud), or Green (ready to start),
+and Yellow/Green offer resets when a user stalls mid-flow. Fallbacks are specified (“I don't know” flips the
+prompt; “nothing sounds right” offers a micro-reset; still stuck re-anchors to the Weekly Horizon).
+3.3 Juniper: Character & Tone System
+Juniper is the product's voice — real, warm, non-clinical, never hierarchical. Tone is a first-class system
+requirement: each stage of each path specifies a tone, and Stage 5 check-ins re-calibrate it.
+User signal Juniper's tone
+Ready to crush it Playful, hyped, encouraging
+Ready but nervous Reassuring, steady; normalize nerves
+Optimistic but overwhelmed Calming, simplified
+Processing plan changes Reflective, validating, informative — explains the why, asks
+what's missing
+Not sure / foggy Grounding, patient, small-win oriented
+Sample register (from path documents): “You're not broken. Feeling stuck doesn't mean you're lazy — it
+just means something's in the way.” • “Procrastination is usually protecting you from something — it's not
+a flaw.” • “Frozen doesn't mean broken. It just means overwhelmed.” Copy at this quality bar is a launch
+requirement, not a nice-to-have.
+3.4 Discover Your Path: Intropersonal Onboarding Quiz
+A 5-minute quiz, offered at onboarding (“Explore the App First” is always available as a skip), that profiles
+the user across the Big Five dimensions using teen-friendly scenario questions (A/B/C format):
+openness, conscientiousness, extraversion, agreeableness, and emotional resilience.
+• Purpose 1 — Communication calibration. Results teach Juniper how this user prefers to be talked
+to (e.g., structure-seeking vs. flexible; needs reassurance vs. wants directness) and feed the tone
+system alongside per-session check-ins.
+• Purpose 2 — Personalized learning. Content and tool suggestions match learning and work style
+(framed in-app as Personalized Learning, Skill Development, Community Connection).
+• Purpose 3 — Tutor matching (Phase 3). The personality profile is a core input to
+personality/needs/interest matching.
+• Privacy: answers are confidential and used only to enhance the experience — this promise appears
+in the UI and must hold in the data model (RLS; never exposed to parents, teachers, or tutors without
+explicit consent).
+• Results are adjustable: users can retake the quiz or override how Juniper talks to them in settings.
+The profile informs tone; it never boxes the user in or appears as a label (“you're an introvert”) in
+dialogue.
+4. Reusable Tools
+4.1 In-Dialogue Tools (surface inside path flows)
+• Micro-Needs Menu — subtle support prompts for physical/emotional needs (stretch, silence, water,
+reassurance, direction).
+• Mood-Matching Visual — color wheel / metaphor deck / body map for naming a current state.
+• Gentle Focus Anchor — sensory grounding or movement cues to refocus attention.
+• Covey Quadrant Sorter — teen-friendly visual urgent/important matrix.
+• Aha! Moment Tracker — tag insights and clarity moments; short text + tag for future reference.
+• Evening Wind Down Prompts — end-of-day reflection, tomorrow preview, habit stack, intentional
+pause.
+• Start Small Planner — breaks big tasks into light, visible, under-2-minute first steps.
+• Mini Reset Toolkit — sensory resets, environmental micro-shifts, gentle reconnection actions;
+triggered on overwhelm or “still stuck.”
+4.2 Dashboard Tools (standalone, habit-building)
+• Habit Tracker — simple daily/weekly checklist of self-selected habits.
+• Streak System — gamified consistency with a reset option and gentle, shame-free messaging.
+• Goal Microflow Tracker — short-, mid-, and long-term goals with progress by category.
+• Weekly Horizon Planner — week at a glance; allocate focus by intention; the anchor other flows
+reference.
+• Progress Reflection Tools — optional mood/progress/friction check-ins with course corrections,
+including end-of-week pattern prompts and habit-loop (cue ® craving ® response ® reward)
+templates.
+5. Landing Page Requirements
+One job: the visitor immediately sees their reflection. The hero must be adaptive/interactive — a small
+taste of the Guidepost check-in itself (e.g., “What's at the top of your mind today?” with a live, gentle
+response) rather than static marketing.
+• Hero: interactive reflective moment mirroring Juniper's opening; no stock-photo hero.
+• Problem section: name the reality (dysregulation, burnout, inequity) plainly, without preachiness.
+• Solution section: the three-way intersection, explained the way Cat explains it to a stranger.
+• How it works: a tangible sample exchange from a real path (e.g., Yellow Stage 1 ® 2D).
+• Community seed: containers for students, parents, teachers — coming, honest about timing.
+• Pricing: transparent freemium; explicit easy-cancel promise (direct answer to the anti-money-grab
+value).
+• CTA: low-pressure (“Try it. No tricks, no pressure.”); referral incentive surfaced post-signup, not as a
+gate.
+5.1 Design System — Patagonia-Inspired, Adventure Not Ed-Tech
+The look should feel like opening a Patagonia adventure guide or hiking journal: clean white
+backgrounds, generous breathing room, rounded cards, outdoor photography, mountain silhouettes, and
+topographic/map elements. Coral is the primary accent. WCAG 2.1 AA contrast applies to every pairing.
+Token Color Use
+Sunset Coral #F9A971 Primary accent (soft): highlights, secondary buttons, warm
+surfaces
+Token Color Use
+Bright Orange #FB6526 Primary CTA / action color
+Deep Sky Blue #0165A5 Links, informational accents, Blue Path theming
+Soft Lavender #A68DEB Calm secondary accent, quiz/reflection surfaces
+Rich Indigo #3B2089 Headers, hero moments, depth
+Charcoal Gray #4A4A4A Body text
+Golden Sand #D0B280 Warm neutral fills, cards, path/trail texture
+• Path theming draws from the palette (e.g., Red Path uses warm coral/orange with calm cards;
+adventure blues/greens for journey and map screens) while keeping the four path identities legible.
+• Signature UI moments from the storyboards: Welcome screen with hero mountain illustration and role
+selection (Student / Parent / Educator); “Discover Your Path” quiz screen with path cards and
+mountain silhouettes; Guidepost dashboard with progress rings, journey map, Current Trail, and Daily
+Reflection.
+• Full design system deliverable: buttons, type scale, cards, icons, shadows, and a shared color theme
+file consumed by Tailwind config.
+• An earlier earthier palette (deep sage, teal, warm neutrals, terracotta) exists as a
+rejected-but-referenced exploration; the Patagonia palette above is confirmed.
+6. Functional Requirements
+6.1 Accounts & Roles
+• Supabase Auth: email/password + Google OAuth. Roles: student, parent, teacher (in a profiles table,
+not auth metadata).
+• Onboarding: role selection (Student / Parent / Educator) on a welcome screen, display name, then
+the optional Discover Your Path quiz (with an “Explore the App First” skip). Collect the minimum data
+possible; assume minors and act accordingly (COPPA/FERPA-aware posture, parental consent flow
+where required).
+• Row Level Security on every table. A student's check-ins, reflections, and chats are visible only to
+them — no parent/teacher surveillance of dialogue content.
+6.2 Guidepost Engine
+• Path router: entry check-in maps user state ® Green / Yellow / Blue / Red; supports mid-flow path
+shifts per the Blue Stage 3 logic.
+• Stage state machine: six stages per path with branch logic (e.g., Yellow 2A–2E), fallback handling,
+and standard vs. evening (5–10 PM) variants.
+• Hybrid content model: authored prompts, options, tip boxes, and reflection quote banks are canonical
+content (versioned in the repo/DB); the LLM adapts phrasing, handles free-text user input, and
+selects tone variants — it does not invent flow structure.
+• LLM abstraction layer (lib/llm/provider.ts): provider-agnostic chat + streaming interface; provider set
+by env var; no direct SDK imports outside the layer.
+• Tool invocation: dialogue stages can summon in-dialogue tools (section 4.1) as structured UI, not as
+text blobs.
+• Aha! moments, reflections, and chosen habits persist to the dashboard.
+6.3 Safety & Escalation (non-negotiable)
+• “Depth of water” monitoring: detect crisis signals (self-harm, abuse, immediate danger) in free-text
+input; pause the flow and surface human resources (988 Suicide & Crisis Lifeline, Crisis Text Line,
+trusted-adult prompts) in Juniper's steady voice.
+• Clear boundary language: “I'm not a counselor, but here's someone who can help.” Never diagnose,
+never prescribe, never attempt therapy for acute crises.
+• Vulnerability safeguards: pathways cap reflective depth; Red/Blue flows always offer grounding exits.
+• Privacy: no identifiable logging in safety telemetry; no behavioral ad tracking; no data sale, ever.
+6.4 Community (Phase 2)
+• Three containers (students, parents, teachers) plus shared overlap spaces.
+• Posts and discussions with role-aware visibility; moderation tooling and report flows from day one of
+the feature.
+• Referral/invite incentive: reward for bringing someone in; framed as sharing help, not growth hacking.
+6.5 Payments (Freemium)
+• Free: daily check-in with a generous limit; core reflection; habit tracker.
+• Paid (accessible price): unlimited Guidepost, full dashboard suite, community, history. Stripe; cancel
+in two taps from settings; no retention dark patterns.
+• School/institutional tier (future): bulk seats; grant-funding friendly.
+7. Data Model (Starting Point)
+Table Purpose / key fields
+profiles id (auth.users FK), role (student/parent/teacher), display_name, created_at
+personality_profiles id, user_id, openness / conscientiousness / extraversion / agreeableness /
+resilience scores, quiz_version, taken_at — RLS: owner-only; feeds Juniper tone
++ Phase 3 matching
+chat_sessions id, user_id, path (green/yellow/blue/red), variant (standard/evening), started_at,
+ended_at
+chat_messages id, session_id, role, content, stage, created_at — stored for continuity, not
+surveillance
+reflections id, user_id, session_id, quote_id or free text, outcome tag, created_at
+Table Purpose / key fields
+aha_moments id, user_id, text, tag, source_session, created_at
+habits / habit_checks self-selected habits; daily/weekly checks; streak count with gentle reset
+goals id, user_id, horizon (short/mid/long), category, title, status
+weekly_horizons id, user_id, week_start, intentions
+posts (Phase 2) id, author_id, container (student/parent/teacher/overlap), content, created_at
+All tables carry RLS. Content banks (prompts, quote sets, tone rules) are versioned application content,
+editable without redeploying dialogue logic.
+8. Non-Functional Requirements
+• Mobile-first: every flow excellent at 375px; check-in one-thumb operable.
+• Performance: streamed LLM responses; interactive hero loads fast on school networks and old
+devices.
+• Accessibility: WCAG 2.1 AA; supports users with ADHD, anxiety, and learning differences (reduced
+motion, clear focus states, no time pressure in dialogue).
+• Reliability of tone: automated eval suite that regression-tests Juniper's outputs against the voice
+guide before prompt changes ship.
+• Stack: Next.js App Router + Tailwind, Supabase, Vercel; TypeScript strict; Server Components by
+default.
+9. Success Metrics
+Horizon Signals
+30 days App downloadable/usable; check-in completion rate; qualitative feedback loop live;
+referral incentive active; first community seedlings.
+90 days Active community across all three containers; D7/D30 retention on daily check-ins; %
+of sessions ending with a captured reflection or Aha! moment.
+180 days Tutor-matching beta: match acceptance and session completion rates; school pilot
+interest.
+Always-on
+guardrails
+Zero dark-pattern complaints; cancellation completable in under 60 seconds; safety
+escalations reviewed weekly.
+10. Phased Roadmap
+• Phase 1 — MVP (30 days): Landing page with interactive reflective hero; auth + role selection
+welcome screen; Discover Your Path quiz (skippable); Green and Yellow paths end-to-end with Mini
+Reset Toolkit, reflection quotes, and evening variants; Aha! tracker; habit tracker; safety layer v1;
+freemium billing; Patagonia design system foundations (palette, type, cards).
+• Phase 2 — Community & depth (90 days): Blue and Red paths (Red spec is complete; ship only
+after dedicated safety review); community containers + overlap; Weekly Horizon planner; streaks;
+goal microflows; referral incentive; progress reflection tools; dashboard journey map + progress rings.
+• Phase 3 — Tutoring (180 days): Tutor profiles; personality/needs/interest matching powered by the
+Big Five profile; scheduling; the completed original vision — academics + support + human
+connection.
+11. Open Questions
+• LLM provider selection and cost modeling at freemium scale (per-check-in token budget).
+• Red Path safety review: spec is now complete; a dedicated review of crisis handling within Red flows
+is required before it ships.
+• Platform confirmation: storyboards were originally sketched for FlutterFlow screens, but the
+confirmed stack is a Next.js responsive web app. Treat mockups as design references unless the
+platform decision changes.
+• Discover Your Path scoring model: how A/B/C answers map to dimension scores, and how scores
+translate into concrete Juniper tone adjustments (needs a rubric before build).
+• Minor-consent flow specifics by region; whether school distribution changes the consent model
+(school as provider).
+• Community moderation staffing/model at Phase 2 scale.
+• Whether Skool (or similar) hosts early community vs. building in-app from the start.
+• Calendar integration depth for Stages 3–4 (read-only view vs. Google Calendar write access).
+Trailhead • PRD v1.0 • July 2026 • “A guide, not a magic wand.”
