@@ -93,6 +93,14 @@ export function collectAuthoredStrings(): Record<string, string> {
       `${resource.name} — ${resource.detail}`;
   });
   out["safety/crisis/trusted-adult"] = crisisContent.trustedAdult;
+  // D3 conversation-starter slot (gap G-S1) — only locked once Cat fills it.
+  if (crisisContent.startConversation.heading) {
+    out["safety/crisis/start-conversation/heading"] =
+      crisisContent.startConversation.heading;
+  }
+  crisisContent.startConversation.starters.forEach((s, i) => {
+    out[`safety/crisis/start-conversation/${i}`] = s;
+  });
 
   return out;
 }

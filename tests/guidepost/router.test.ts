@@ -7,6 +7,7 @@ const flagsOff: Flags = {
   redPath: false,
   dashboardExtras: false,
   quizScoring: false,
+  safetyClassifier: false,
 };
 
 describe("entry router", () => {

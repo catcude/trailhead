@@ -94,6 +94,17 @@ const NodeBase = z.object({
   /** Node only appears in one check-in variant (e.g. evening wind-down). */
   variantOnly: z.enum(["standard", "evening"]).optional(),
   fallbacks: FallbacksSchema.optional(),
+  /**
+   * Reflective-depth cap (PRD §6.3, D4). Mark a free-text node as an
+   * emotional probe so consecutive probe turns are counted; once the cap is
+   * reached the machine diverts to `depthResetTo` (a grounding reset) instead
+   * of another probe. Which nodes qualify — and the non-dismissive transition
+   * copy — are pending Cat (docs/content-review/m2-for-cat.md); until a node
+   * opts in, the cap is inert.
+   */
+  emotionalProbe: z.boolean().optional(),
+  /** Divert target when the reflective-depth cap is hit (usually a mini-reset). */
+  depthResetTo: z.string().min(1).optional(),
 });
 
 export const NodeSchema = z.discriminatedUnion("kind", [
@@ -160,6 +171,7 @@ function edgeTargets(node: ContentNode): string[] {
   if (node.fallbacks) {
     for (const t of Object.values(node.fallbacks)) if (t) targets.push(t);
   }
+  if (node.depthResetTo) targets.push(node.depthResetTo);
   return targets;
 }
 

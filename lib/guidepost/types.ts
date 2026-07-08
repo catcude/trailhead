@@ -10,6 +10,11 @@ export interface SessionState {
   returnTo?: string;
   /** Option ids chosen, keyed by node id (feeds tone calibration in M2). */
   choices: Record<string, string>;
+  /**
+   * Consecutive emotional-probe free-text turns (reflective-depth cap, D4).
+   * Backward-compatible: absent on old sessions is treated as 0.
+   */
+  probeDepth?: number;
   done: boolean;
 }
 

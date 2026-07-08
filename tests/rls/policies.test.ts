@@ -188,6 +188,37 @@ suite("row level security (owner-only, no exceptions)", () => {
     });
     expect(error).not.toBeNull();
   });
+
+  // ── safety_events: identifier-free, no client read/write, RPC-only insert ──
+  it("safety_events is not directly readable by an authenticated user", async () => {
+    const { data } = await alice.from("safety_events").select("*");
+    expect(data ?? []).toEqual([]);
+  });
+
+  it("safety_events cannot be inserted into directly (no write policy)", async () => {
+    const { error } = await alice
+      .from("safety_events")
+      .insert({ category: "self-harm", path: "green", stage: 1 });
+    expect(error).not.toBeNull();
+  });
+
+  it("log_safety_event RPC works for an authenticated user", async () => {
+    const { error } = await alice.rpc("log_safety_event", {
+      p_category: "self-harm",
+      p_path: "green",
+      p_stage: 3,
+    });
+    expect(error).toBeNull();
+  });
+
+  it("anon cannot call log_safety_event", async () => {
+    const { error } = await anon.rpc("log_safety_event", {
+      p_category: "danger",
+      p_path: "yellow",
+      p_stage: 2,
+    });
+    expect(error).not.toBeNull();
+  });
 });
 
 if (!configured) {

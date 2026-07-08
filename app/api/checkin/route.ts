@@ -19,7 +19,8 @@ import {
   type EngineOutput,
   type SessionState,
 } from "@/lib/guidepost/types";
-import { screen } from "@/lib/llm/safety";
+import { screen, type CrisisCategory } from "@/lib/llm/safety";
+import { classifyCrisis } from "@/lib/llm/safety-classifier";
 import { getProvider, streamAuthored } from "@/lib/llm/provider";
 import { adaptMessage } from "@/lib/llm/adapt";
 import { interpretBrainDump } from "@/lib/llm/interpret";
@@ -156,14 +157,30 @@ export async function POST(request: NextRequest) {
 
     // 5. Safety screen — free text only, before ANYTHING else runs.
     if (body.input.type === "text") {
-      const verdict = screen(body.input.text);
-      if (!verdict.ok) {
+      const lexicon = screen(body.input.text);
+      // The lexicon is the floor. The optional second-pass classifier may only
+      // ADD an escalation it missed (WS4); it can never clear a lexicon hit.
+      let crisisCategory: CrisisCategory | null = lexicon.ok
+        ? null
+        : lexicon.category;
+      if (crisisCategory === null && flags.safetyClassifier) {
+        crisisCategory = await classifyCrisis(getProvider(), body.input.text);
+      }
+      if (crisisCategory) {
+        // Identifier-free telemetry (CLAUDE.md §Safety): category/path/stage
+        // and nothing else — never the trigger text, user id, or session id.
+        const stage = content.nodes[state.currentNodeId]?.stage ?? null;
+        await supabase.rpc("log_safety_event", {
+          p_category: crisisCategory,
+          p_path: loaded.data.path,
+          p_stage: stage,
+        });
         const safetyMessages = composeSafetyMessages();
         const pausedState: SessionState = { ...state, done: true };
         await supabase
           .from("chat_sessions")
           .update({
-            state: { ...pausedState, safetyPause: verdict.category },
+            state: { ...pausedState, safetyPause: crisisCategory },
             ended_at: new Date().toISOString(),
           })
           .eq("id", sessionId);
