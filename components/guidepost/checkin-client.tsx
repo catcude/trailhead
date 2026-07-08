@@ -232,6 +232,11 @@ export function CheckinClient({
           {frame.tool?.type === "coveyQuadrantSorter" ? (
             <CoveyQuadrantSorter
               disabled={pending}
+              items={
+                Array.isArray(frame.tool.props?.items)
+                  ? (frame.tool.props.items as string[])
+                  : undefined
+              }
               onDone={(result: CoveySorterResult) =>
                 send({ type: "toolResult", payload: result }, "Sorted ✓")
               }

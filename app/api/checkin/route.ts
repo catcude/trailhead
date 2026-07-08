@@ -22,6 +22,8 @@ import {
 import { screen } from "@/lib/llm/safety";
 import { getProvider, streamAuthored } from "@/lib/llm/provider";
 import { adaptMessage } from "@/lib/llm/adapt";
+import { interpretBrainDump } from "@/lib/llm/interpret";
+import { explainPlanChange } from "@/lib/llm/plan-change";
 import { recalibratedTone } from "@/content/tone/tones";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/server";
@@ -196,6 +198,44 @@ export async function POST(request: NextRequest) {
     const preNode = content.nodes[state.currentNodeId];
     const output = advance(state, body.input, ctx);
 
+    // 6a. Free-text interpretation (WS2): seed the Covey sorter with the
+    // student's brain-dump items. The machine still owns flow — this only
+    // fills the tool's props. Falls back to a deterministic split in verbatim
+    // mode or on any LLM error (see interpretBrainDump).
+    if (
+      output.tool?.type === "coveyQuadrantSorter" &&
+      body.input.type === "text"
+    ) {
+      const items = await interpretBrainDump(getProvider(), body.input.text);
+      output.tool = {
+        ...output.tool,
+        props: { ...output.tool.props, items },
+      };
+    }
+
+    // 6b. Grounded plan-change explanation (WS2): when a Green student asks to
+    // walk through WHY the plan changed, prepend an explanation grounded ONLY
+    // in their own session text. Skipped entirely in verbatim mode / on error
+    // (explainPlanChange returns null), preserving M1 behavior. The authored
+    // "Does that help?" line still follows verbatim.
+    if (
+      content.path === "green" &&
+      preNode?.id === "s5-processing" &&
+      body.input.type === "option" &&
+      body.input.optionId === "yes-walk-through"
+    ) {
+      const userInputs = await loadSessionUserText(supabase, sessionId);
+      const explanation = await explainPlanChange(getProvider(), userInputs);
+      if (explanation) {
+        output.messages.unshift({
+          nodeId: "s5-processing-help:why",
+          text: explanation,
+          // Already generated and grounded — never re-adapted.
+          adaptable: false,
+        });
+      }
+    }
+
     // 7. Persist turn + node-specific side effects.
     await persistTurn(supabase, sessionId, userMessage, output, preNode?.stage);
 
@@ -234,6 +274,28 @@ export async function POST(request: NextRequest) {
     }
     throw error;
   }
+}
+
+/**
+ * The student's own text from THIS session (role=user rows), for grounding
+ * the plan-change explanation. Session-scoped by design — never joins to
+ * profiles, email, or display name (PRD §6.3). Tool-result payloads are
+ * excluded (not the student's words).
+ */
+async function loadSessionUserText(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  sessionId: string,
+): Promise<string[]> {
+  const { data, error } = await supabase
+    .from("chat_messages")
+    .select("content, created_at")
+    .eq("session_id", sessionId)
+    .eq("role", "user")
+    .order("created_at", { ascending: true });
+  if (error || !data) return [];
+  return data
+    .map((row) => (row as { content: string }).content)
+    .filter((c) => typeof c === "string" && !c.startsWith('{"toolResult"'));
 }
 
 async function persistTurn(

@@ -24,13 +24,16 @@ export interface CoveySorterResult {
 export function CoveyQuadrantSorter({
   onDone,
   disabled,
+  items: seed,
 }: {
   onDone: (result: CoveySorterResult) => void;
   disabled?: boolean;
+  /** Pre-filled items from the brain-dump interpretation (WS2); editable. */
+  items?: string[];
 }) {
   const [draft, setDraft] = useState("");
   const [items, setItems] = useState<{ text: string; quadrant?: QuadrantId }[]>(
-    [],
+    () => (seed ?? []).map((text) => ({ text })),
   );
 
   const unsorted = items.filter((i) => !i.quadrant);
