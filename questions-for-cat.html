@@ -1,0 +1,685 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>A few things to figure out — for Cat</title>
+    <!--
+      Standalone, fully self-contained page for Cat. No build step, no
+      external requests (system fonts only) — open it straight from disk,
+      even offline. Answers live only in this browser tab until you press
+      "Download my answers." Nothing is sent anywhere.
+
+      The questions trace to the PRD §11 open-question register and the
+      buildmap/scaffolding-plan gap list. Assumptions shown are our current
+      best guess — you can confirm, tweak, or overrule any of them.
+    -->
+    <style>
+      :root {
+        /* Patagonia palette (PRD §5.1) */
+        --coral: #f9a971;
+        --cta: #fb6526;
+        --info: #0165a5;
+        --calm: #a68deb;
+        --depth: #3b2089;
+        --ink: #4a4a4a;
+        --sand: #d0b280;
+        --paper: #fffdf9;
+        --paper-2: #fff7ec;
+        --line: rgba(74, 74, 74, 0.14);
+        --shadow: 0 1px 3px rgb(59 32 137 / 0.06), 0 10px 30px rgb(59 32 137 / 0.08);
+        --font:
+          ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        --serif: ui-serif, Georgia, "Times New Roman", serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--ink);
+        background: radial-gradient(
+          120% 80% at 50% -10%,
+          var(--paper-2) 0%,
+          var(--paper) 55%
+        );
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* Progress bar pinned to the top — fills as Cat answers */
+      #progress-track {
+        position: fixed;
+        inset: 0 0 auto 0;
+        height: 6px;
+        background: rgba(208, 178, 128, 0.25);
+        z-index: 50;
+      }
+      #progress-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, var(--coral), var(--cta));
+        transition: width 0.4s ease;
+      }
+
+      .wrap {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 0 20px 96px;
+      }
+
+      /* Hero */
+      header.hero {
+        position: relative;
+        padding: 88px 20px 0;
+        text-align: center;
+        overflow: hidden;
+      }
+      .kicker {
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--cta);
+        margin-bottom: 14px;
+      }
+      h1 {
+        font-family: var(--serif);
+        font-size: clamp(2rem, 1.1rem + 4.2vw, 3.4rem);
+        line-height: 1.1;
+        color: var(--depth);
+        margin: 0 auto 18px;
+        max-width: 14ch;
+        text-wrap: balance;
+      }
+      .lede {
+        max-width: 34rem;
+        margin: 0 auto;
+        font-size: 1.075rem;
+        color: var(--ink);
+      }
+      .hero-note {
+        margin: 22px auto 0;
+        max-width: 32rem;
+        font-size: 0.9rem;
+        color: rgba(74, 74, 74, 0.75);
+        background: rgba(166, 141, 235, 0.12);
+        border: 1px solid rgba(166, 141, 235, 0.3);
+        border-radius: 14px;
+        padding: 12px 16px;
+      }
+      .mountains {
+        display: block;
+        width: 100%;
+        height: 120px;
+        margin-top: 34px;
+      }
+
+      /* Checkpoint sections */
+      .checkpoint-head {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin: 56px 0 8px;
+      }
+      .checkpoint-head .marker {
+        flex: none;
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        font-size: 1.4rem;
+        background: var(--paper);
+        border: 2px solid var(--coral);
+        box-shadow: var(--shadow);
+      }
+      .checkpoint-head h2 {
+        font-family: var(--serif);
+        font-size: 1.45rem;
+        color: var(--depth);
+        margin: 0;
+      }
+      .checkpoint-head .sub {
+        font-size: 0.82rem;
+        color: rgba(74, 74, 74, 0.7);
+        margin: 2px 0 0;
+      }
+      .trail-line {
+        border: none;
+        border-top: 2px dashed rgba(208, 178, 128, 0.7);
+        margin: 10px 0 26px 22px;
+      }
+
+      /* Question cards */
+      .q {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        padding: 22px 22px 20px;
+        margin: 18px 0;
+        box-shadow: var(--shadow);
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+      .q:focus-within {
+        transform: translateY(-2px);
+        box-shadow: 0 2px 6px rgb(59 32 137 / 0.1), 0 16px 40px rgb(59 32 137 / 0.13);
+      }
+      .q .tag {
+        display: inline-block;
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--info);
+        background: rgba(1, 101, 165, 0.09);
+        border-radius: 999px;
+        padding: 3px 10px;
+        margin-bottom: 10px;
+      }
+      .q .tag.priority {
+        color: #fff;
+        background: var(--cta);
+      }
+      .q h3 {
+        font-size: 1.12rem;
+        color: var(--depth);
+        margin: 0 0 8px;
+        line-height: 1.35;
+      }
+      .q p.why {
+        font-size: 0.94rem;
+        margin: 0 0 12px;
+      }
+      .q .assumption {
+        font-size: 0.88rem;
+        border-left: 3px solid var(--coral);
+        background: var(--paper-2);
+        padding: 9px 13px;
+        border-radius: 0 10px 10px 0;
+        margin: 0 0 14px;
+        color: rgba(74, 74, 74, 0.9);
+      }
+      .q .assumption strong {
+        color: var(--depth);
+      }
+      .q .quoted {
+        font-size: 0.9rem;
+        font-style: italic;
+        color: var(--depth);
+        background: rgba(166, 141, 235, 0.1);
+        border-radius: 10px;
+        padding: 10px 14px;
+        margin: 0 0 14px;
+      }
+      .q label {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--ink);
+        margin-bottom: 6px;
+      }
+      .q textarea {
+        width: 100%;
+        min-height: 84px;
+        resize: vertical;
+        font-family: inherit;
+        font-size: 1rem;
+        line-height: 1.55;
+        color: var(--ink);
+        background: #fff;
+        border: 1.5px solid var(--line);
+        border-radius: 12px;
+        padding: 12px 14px;
+        transition: border-color 0.15s ease;
+      }
+      .q textarea::placeholder {
+        color: rgba(74, 74, 74, 0.4);
+      }
+      .q textarea:focus {
+        outline: none;
+        border-color: var(--cta);
+      }
+
+      /* Finish */
+      .finish {
+        text-align: center;
+        margin-top: 64px;
+        padding: 40px 24px;
+        background: linear-gradient(160deg, var(--paper-2), var(--paper));
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        box-shadow: var(--shadow);
+      }
+      .finish h2 {
+        font-family: var(--serif);
+        color: var(--depth);
+        font-size: 1.5rem;
+        margin: 0 0 8px;
+      }
+      .finish p {
+        max-width: 32rem;
+        margin: 0 auto 22px;
+        font-size: 0.95rem;
+      }
+      button#download {
+        font: inherit;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #fff;
+        background: var(--cta);
+        border: none;
+        border-radius: 999px;
+        padding: 15px 34px;
+        cursor: pointer;
+        box-shadow: 0 6px 18px rgb(251 101 38 / 0.35);
+        transition:
+          transform 0.15s ease,
+          background 0.15s ease;
+      }
+      button#download:hover {
+        background: #e9550f;
+        transform: translateY(-1px);
+      }
+      button#download:focus-visible {
+        outline: 3px solid var(--depth);
+        outline-offset: 3px;
+      }
+      .saved-hint {
+        margin-top: 14px;
+        font-size: 0.85rem;
+        color: var(--info);
+        min-height: 1.2em;
+      }
+      footer {
+        text-align: center;
+        font-size: 0.8rem;
+        color: rgba(74, 74, 74, 0.6);
+        margin-top: 40px;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        *,
+        *::before,
+        *::after {
+          transition-duration: 0.01ms !important;
+          animation-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="progress-track" aria-hidden="true">
+      <div id="progress-fill"></div>
+    </div>
+
+    <header class="hero">
+      <div class="kicker">Trailhead · a few things only you can answer</div>
+      <h1>Hey Cat — help us pick the trail.</h1>
+      <p class="lede">
+        The engine works. Green and Yellow run start to finish in your words.
+        Before we push into the next stretch, there are a handful of forks in
+        the path where your call decides the route. None are homework — a
+        sentence each is plenty, and you can skip any that aren&apos;t ready.
+      </p>
+      <p class="hero-note">
+        Everything you type stays in this browser tab. When you&apos;re done,
+        the button at the bottom saves it all to a file you can send back —
+        nothing leaves your device on its own.
+      </p>
+      <svg
+        class="mountains"
+        viewBox="0 0 800 120"
+        preserveAspectRatio="xMidYMax slice"
+        aria-hidden="true"
+      >
+        <path
+          fill="#a68deb"
+          fill-opacity="0.35"
+          d="M0 120 L110 55 L200 95 L320 30 L440 90 L560 45 L690 95 L800 40 L800 120 Z"
+        />
+        <path
+          fill="#3b2089"
+          fill-opacity="0.6"
+          d="M0 120 L90 80 L200 110 L320 60 L440 105 L570 70 L690 110 L800 72 L800 120 Z"
+        />
+        <path
+          fill="#f9a971"
+          d="M0 120 L150 98 L270 116 L400 92 L540 114 L660 100 L800 112 L800 120 Z"
+        />
+      </svg>
+    </header>
+
+    <main class="wrap" id="form">
+      <!-- Questions are injected here by the script below, so the markdown
+           export and the on-screen list can never drift apart. -->
+    </main>
+
+    <div class="wrap">
+      <section class="finish">
+        <h2>That&apos;s the whole trail.</h2>
+        <p>
+          Thank you — every answer here unblocks something real on our side.
+          Press below and it&apos;ll download as a tidy Markdown file
+          (<code>trailhead-open-questions-cat.md</code>) you can send straight
+          back to us.
+        </p>
+        <button id="download" type="button">Download my answers</button>
+        <p class="saved-hint" id="saved-hint" role="status"></p>
+      </section>
+      <footer>Made for Cat · Trailhead · “A guide, not a magic wand.”</footer>
+    </div>
+
+    <script>
+      /*
+       * Single source of truth for the on-screen questions AND the markdown
+       * export. Each question: id, tag, optional priority flag, title, "why
+       * it matters", optional assumption, optional quoted draft to react to,
+       * and the textarea placeholder.
+       */
+      const CHECKPOINTS = [
+        {
+          icon: "🧭",
+          title: "Checkpoint 1 — Powering Juniper",
+          sub: "Unblocks the next build stretch",
+          questions: [
+            {
+              id: "provider",
+              tag: "Decision · OQ1",
+              title: "Which AI should power Juniper's adaptive voice?",
+              why: "Guidepost runs fully without any AI today (it streams your exact words). The AI's only jobs are softening phrasing to the right tone, reading free-text answers, and a second safety check. We need to pick a provider before turning that on.",
+              assumption:
+                "Our recommendation: Anthropic's Claude, on a small fast model, with your words as the guaranteed fallback if it's ever unavailable.",
+              placeholder:
+                "e.g. 'Go with Claude' — or name another, or any cost ceiling per check-in you want us to respect.",
+            },
+            {
+              id: "pricing",
+              tag: "Decision · OQ6",
+              title: "What's free, what's paid, and at what price?",
+              why: "The free tier has to be genuinely useful, never a teaser — that's a core value. We just need your lines for where free ends and paid begins, and the price.",
+              assumption:
+                "Our placeholder: FREE = one full check-in a day + unlimited Mini Resets. PAID = unlimited check-ins, the full dashboard, community, and history. Price: not set.",
+              placeholder:
+                "e.g. 'Free is fine as-is; paid at $X/month' — or redraw the line however feels right.",
+            },
+          ],
+        },
+        {
+          icon: "🛟",
+          title: "Checkpoint 2 — Keeping it safe",
+          sub: "Highest priority — this is the deep-water layer",
+          questions: [
+            {
+              id: "safety-copy",
+              tag: "Your words · priority",
+              priority: true,
+              title: "Do these crisis-moment lines sound right in your voice?",
+              why: "When a student types something that signals real danger, Juniper pauses everything and shows this. The boundary line and the hotlines are already locked exactly as written. The other two lines are our drafts and need your ear most of all.",
+              quoted:
+                "Intro (draft): “Before we go any further — what you just shared sounds heavy, and it matters more than any plan we could make today.”  •  Boundary (locked): “I'm not a counselor, but here's someone who can help.”  •  Then: 988 Suicide & Crisis Lifeline, and Crisis Text Line (text HOME to 741741).  •  Trusted adult (draft): “Is there an adult you trust — a parent, a teacher, a counselor — you could talk to today? You don't have to carry this alone.”",
+              placeholder:
+                "Rewrite the intro and/or trusted-adult line however you'd say it, or tell us they're good as-is.",
+            },
+            {
+              id: "depth-cap",
+              tag: "Decision",
+              title:
+                "How many heavy free-text moments before Juniper gently pulls back?",
+              why: "To keep the app from pulling a student deeper than it should, after a few emotional open-text turns in a row Juniper offers a grounding reset instead of another probing question. We need your number for 'a few.'",
+              assumption: "Our placeholder: 3 turns in a row.",
+              placeholder: "e.g. '3 is right' — or 2, or 4…",
+            },
+            {
+              id: "red-review",
+              tag: "Decision + people",
+              title: "Who runs the Red Path safety review, and roughly when?",
+              why: "The Red Path (overwhelm / emotional flooding) is built but locked behind a gate that only a signed safety review can open — it cannot reach students until then. We need to know who does that review and your rough timing.",
+              placeholder:
+                "e.g. a name, a role, 'a counselor friend', or 'let's talk about who' — plus any timing.",
+            },
+          ],
+        },
+        {
+          icon: "✍️",
+          title: "Checkpoint 3 — Your words",
+          sub: "Small content calls that are yours to make",
+          questions: [
+            {
+              id: "router-labels",
+              tag: "Your words",
+              title:
+                "The very first thing a student taps — do these two buttons sound like you?",
+              why: "The opening question is your line, “How are you feeling today?” Under it are two options that route to the Green and Yellow paths. Those two labels are our drafts.",
+              quoted:
+                "Green (has energy, wants structure): “I've got energy and a plan in my head.”  •  Yellow (knows what to do but can't start): “I know what to do but I can't start.”",
+              placeholder:
+                "Rewrite either label in your voice, or tell us they're good.",
+            },
+            {
+              id: "small-picks",
+              tag: "Two quick either/ors",
+              title: "Two tiny wording picks (G-G3 & G-G4).",
+              why: "Your path doc had two phrasings for each of these and we don't want to guess.",
+              quoted:
+                "1) Stage 1 opener: “What are 1–3 things at the top of your mind today?”  vs  “What are 3 things…?”   2) A Stage 4 tip line: “Real-life alignment reduces overwhelm and builds flow.”  vs  “Cohesion = Flow = Less Stress.”",
+              placeholder:
+                "e.g. '1–3 things' and 'the first tip line' — whichever you prefer for each.",
+            },
+            {
+              id: "quiz-rubric",
+              tag: "Decision · OQ2",
+              title:
+                "How should the Discover Your Path quiz change how Juniper talks?",
+              why: "The 5-minute quiz is built and its answers are saved, but we're not scoring them yet — because how an A/B/C answer should shift Juniper's tone (more structure? more reassurance? more directness?) is a call only you can make. This also unlocks future tutor matching.",
+              placeholder:
+                "Even a rough sketch helps — e.g. 'mostly C on resilience → lead with reassurance and smaller steps.' Or 'let's whiteboard this together.'",
+            },
+          ],
+        },
+        {
+          icon: "🏔️",
+          title: "Checkpoint 4 — The bigger picture",
+          sub: "Later milestones — your direction now saves rework later",
+          questions: [
+            {
+              id: "community-home",
+              tag: "Decision · OQ5",
+              title: "Where should community live?",
+              why: "Your vision has containers for students, parents, and teachers with overlap spaces. We can build that inside Trailhead, or start it on an existing platform like Skool. The two paths look very different for us, so your lean matters early.",
+              assumption:
+                "Our default if you have no strong preference: build it in-app so student privacy stays under our roof.",
+              placeholder:
+                "e.g. 'in-app', 'start on Skool to move fast', or 'not sure — here's what matters to me…'",
+            },
+            {
+              id: "community-access",
+              tag: "Decision",
+              title: "Is community free or paid — and who keeps it safe?",
+              why: "Two open pieces: whether community is part of the paid tier or open to everyone, and who moderates it (reports and moderation ship from day one either way).",
+              placeholder:
+                "e.g. 'free for students, paid extras for adults', and your thoughts on who moderates.",
+            },
+            {
+              id: "consent-region",
+              tag: "Decision · OQ4",
+              title:
+                "Anything region-specific we must handle for minors before schools?",
+              why: "We're building privacy-first for minors: a simple 13+ checkbox, and we collect as little as possible. Before we sell to schools there may be consent rules (state, district, COPPA/FERPA specifics) you know about that we should plan for now.",
+              assumption:
+                "Our current posture: 13+ self-check + data minimization, with a parental-consent step reserved for the school rollout.",
+              placeholder:
+                "Anything you already know we'll need — or 'flag for legal later' is a fine answer.",
+            },
+            {
+              id: "tutor-safeguarding",
+              tag: "Direction (not building yet)",
+              title:
+                "Tutoring is the original dream — how do you picture keeping it safe?",
+              why: "Tutor matching is the far-horizon milestone. Tutors are adults working with minors, so vetting and safeguarding will be its own big piece. We're not building it yet — we just want your instinct so we design toward it, not away from it.",
+              placeholder:
+                "e.g. 'background checks + always-visible sessions', or a story of what good tutoring looked like for you.",
+            },
+          ],
+        },
+      ];
+
+      const POINTER =
+        "Line-by-line wording drafts (beyond the ones above) live in the repo's content-review notes — we can walk those separately whenever you want.";
+
+      // Render
+      const form = document.getElementById("form");
+      let totalQuestions = 0;
+
+      CHECKPOINTS.forEach((cp) => {
+        const head = document.createElement("div");
+        head.className = "checkpoint-head";
+        head.innerHTML =
+          '<div class="marker" aria-hidden="true">' +
+          cp.icon +
+          "</div><div><h2>" +
+          escapeHtml(cp.title) +
+          '</h2><p class="sub">' +
+          escapeHtml(cp.sub) +
+          "</p></div>";
+        form.appendChild(head);
+
+        const hr = document.createElement("hr");
+        hr.className = "trail-line";
+        form.appendChild(hr);
+
+        cp.questions.forEach((q) => {
+          totalQuestions++;
+          const card = document.createElement("section");
+          card.className = "q";
+          let html =
+            '<span class="tag' +
+            (q.priority ? " priority" : "") +
+            '">' +
+            escapeHtml(q.tag) +
+            "</span>";
+          html += "<h3>" + escapeHtml(q.title) + "</h3>";
+          html += '<p class="why">' + escapeHtml(q.why) + "</p>";
+          if (q.quoted) {
+            html += '<div class="quoted">' + escapeHtml(q.quoted) + "</div>";
+          }
+          if (q.assumption) {
+            html +=
+              '<div class="assumption"><strong>Where we&apos;re leaning:</strong> ' +
+              escapeHtml(q.assumption) +
+              "</div>";
+          }
+          html +=
+            '<label for="ans-' +
+            q.id +
+            '">Your answer</label>' +
+            '<textarea id="ans-' +
+            q.id +
+            '" data-qid="' +
+            q.id +
+            '" placeholder="' +
+            escapeAttr(q.placeholder) +
+            '"></textarea>';
+          card.innerHTML = html;
+          form.appendChild(card);
+        });
+      });
+
+      // Progress bar
+      const fill = document.getElementById("progress-fill");
+      const textareas = Array.from(form.querySelectorAll("textarea"));
+      function updateProgress() {
+        const answered = textareas.filter(
+          (t) => t.value.trim().length > 0,
+        ).length;
+        const pct = totalQuestions
+          ? Math.round((answered / totalQuestions) * 100)
+          : 0;
+        fill.style.width = pct + "%";
+      }
+      textareas.forEach((t) => t.addEventListener("input", updateProgress));
+
+      // Download as Markdown
+      function buildMarkdown() {
+        const today = new Date().toISOString().slice(0, 10);
+        const lines = [];
+        lines.push("# Trailhead — open questions, answered by Cat");
+        lines.push("");
+        lines.push("_Saved " + today + "._");
+        lines.push("");
+        CHECKPOINTS.forEach((cp) => {
+          lines.push("## " + cp.title);
+          lines.push("");
+          lines.push("_" + cp.sub + "_");
+          lines.push("");
+          cp.questions.forEach((q) => {
+            lines.push("### " + q.title);
+            lines.push("");
+            lines.push("_Why it matters:_ " + q.why);
+            if (q.quoted) lines.push("", "> " + q.quoted);
+            if (q.assumption)
+              lines.push("", "_Where we were leaning:_ " + q.assumption);
+            const el = document.querySelector(
+              'textarea[data-qid="' + q.id + '"]',
+            );
+            const answer = el && el.value.trim();
+            lines.push("");
+            lines.push(
+              "**Cat's answer:** " + (answer ? answer : "_(skipped)_"),
+            );
+            lines.push("");
+          });
+        });
+        lines.push("---");
+        lines.push("");
+        lines.push("_" + POINTER + "_");
+        lines.push("");
+        return lines.join("\n");
+      }
+
+      document.getElementById("download").addEventListener("click", () => {
+        const md = buildMarkdown();
+        const blob = new Blob([md], { type: "text/markdown;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "trailhead-open-questions-cat.md";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        const answered = textareas.filter(
+          (t) => t.value.trim().length > 0,
+        ).length;
+        document.getElementById("saved-hint").textContent =
+          "Saved " +
+          answered +
+          " of " +
+          totalQuestions +
+          " answers to your downloads. Thank you, Cat. 🧡";
+      });
+
+      // Helpers
+      function escapeHtml(s) {
+        return String(s)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+      }
+      function escapeAttr(s) {
+        return escapeHtml(s).replace(/"/g, "&quot;");
+      }
+    </script>
+  </body>
+</html>

@@ -20,7 +20,7 @@
 | M4 — Community & depth (PRD Phase 2) | 📋 Planned below (needs human review before execution) |
 | M5 — Tutoring matching (PRD Phase 3) | 📋 Outlined below (requires a dedicated planning pass before execution) |
 
-**Branch/PR state (important):** PR #1 was merged into `main` early, when it contained only the scaffolding-plan document. **`main` does NOT contain the application code.** All M0/M1 implementation commits (`818da96`…`97bcf77`) live on `claude/trailhead-scaffolding-plan-j36q96`, which also now contains `main`'s later additions (this file and the root `index.html` landing mockup) via merge. A new PR from this branch is required to land M0/M1 on `main`. Until that merge, treat the branch — not `main` — as the current codebase.
+**Branch/PR state:** The M0/M1 application code (commits `818da96`…`97bcf77`) originated on `claude/trailhead-scaffolding-plan-j36q96` and was fast-forwarded onto `main` on 2026-07-07, so **`main` now contains the full application** alongside the plan docs and Cat's root `index.html` mockup. Continue day-to-day work on the feature branch and land it on `main` via fast-forward/PR; `main` and the branch tip should stay in sync.
 
 ---
 
