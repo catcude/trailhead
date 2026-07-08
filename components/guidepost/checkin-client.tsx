@@ -13,6 +13,12 @@ import {
   type CoveySorterResult,
 } from "@/components/tools/covey-quadrant-sorter";
 import { MiniResetToolkit } from "@/components/tools/mini-reset-toolkit";
+import { StartSmallPlanner } from "@/components/tools/start-small-planner";
+import { MicroNeedsMenu } from "@/components/tools/micro-needs-menu";
+import { GentleFocusAnchor } from "@/components/tools/gentle-focus-anchor";
+import { MoodMatchingVisual } from "@/components/tools/mood-matching-visual";
+import { EveningWindDown } from "@/components/tools/evening-wind-down";
+import { AhaTracker } from "@/components/tools/aha-tracker";
 
 interface Bubble {
   role: "juniper" | "user";
@@ -254,6 +260,69 @@ export function CheckinClient({
                   { type: "toolResult", payload: result },
                   result.tried ?? "Took a breather",
                 )
+              }
+            />
+          ) : null}
+
+          {frame.tool?.type === "startSmallPlanner" ? (
+            <StartSmallPlanner
+              disabled={pending}
+              onDone={(result) =>
+                send({ type: "toolResult", payload: result }, "Planned ✓")
+              }
+            />
+          ) : null}
+
+          {frame.tool?.type === "microNeedsMenu" ? (
+            <MicroNeedsMenu
+              disabled={pending}
+              onDone={(result) =>
+                send(
+                  { type: "toolResult", payload: result },
+                  result.need ?? "I’m okay for now",
+                )
+              }
+            />
+          ) : null}
+
+          {frame.tool?.type === "gentleFocusAnchor" ? (
+            <GentleFocusAnchor
+              disabled={pending}
+              onDone={(result) =>
+                send({ type: "toolResult", payload: result }, "Back")
+              }
+            />
+          ) : null}
+
+          {frame.tool?.type === "moodMatchingVisual" ? (
+            <MoodMatchingVisual
+              disabled={pending}
+              onDone={(result) =>
+                send(
+                  { type: "toolResult", payload: result },
+                  result.mood ?? "Continued",
+                )
+              }
+            />
+          ) : null}
+
+          {frame.tool?.type === "eveningWindDown" ? (
+            <EveningWindDown
+              disabled={pending}
+              onDone={(result) =>
+                send(
+                  { type: "toolResult", payload: result },
+                  result.choice ?? "Wound down",
+                )
+              }
+            />
+          ) : null}
+
+          {frame.tool?.type === "ahaTracker" ? (
+            <AhaTracker
+              disabled={pending}
+              onDone={(result) =>
+                send({ type: "toolResult", payload: result }, "Saved ✓")
               }
             />
           ) : null}
