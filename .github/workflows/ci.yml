@@ -42,6 +42,32 @@ jobs:
       - name: Build
         run: pnpm build
 
+  e2e:
+    # No-auth interactive-hero E2E (WS8). Builds + serves the app and drives
+    # Chromium. Authed flows run against a preview (see m2-for-cat.md).
+    name: E2E (interactive hero)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Run E2E
+        run: pnpm exec playwright test
+
   rls:
     name: Migrations + RLS policy tests
     runs-on: ubuntu-latest

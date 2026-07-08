@@ -39,9 +39,12 @@ interface RouterOptionProp {
 export function CheckinClient({
   routerPrompt,
   routerOptions,
+  resumeSessionId = null,
 }: {
   routerPrompt: string;
   routerOptions: RouterOptionProp[];
+  /** Most recent unfinished session, if any — offers a resume (WS8). */
+  resumeSessionId?: string | null;
 }) {
   const [bubbles, setBubbles] = useState<Bubble[]>([
     { role: "juniper", text: routerPrompt },
@@ -52,6 +55,9 @@ export function CheckinClient({
   const [error, setError] = useState<string | null>(null);
   const [draft, setDraft] = useState("");
   const [horizon, setHorizon] = useState<string[] | null>(null);
+  const [resumeOffer, setResumeOffer] = useState<boolean>(
+    Boolean(resumeSessionId),
+  );
   const bottomRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -61,6 +67,7 @@ export function CheckinClient({
   async function send(
     input: Record<string, unknown>,
     userBubble: string | null,
+    sessionIdOverride?: string,
   ) {
     setPending(true);
     setError(null);
@@ -73,7 +80,7 @@ export function CheckinClient({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          sessionId: frame?.sessionId,
+          sessionId: sessionIdOverride ?? frame?.sessionId,
           input,
           clientLocalHour: new Date().getHours(),
         }),
@@ -200,7 +207,39 @@ export function CheckinClient({
       ) : null}
 
       {/* ── Interactive area ─────────────────────────────────────────────── */}
-      {showOptions && atRouter ? (
+      {resumeOffer && atRouter && resumeSessionId ? (
+        <div className="flex flex-col gap-2 rounded-[var(--radius-card)] border border-sand/40 bg-calm/10 p-4">
+          <p className="text-sm text-depth">
+            You have a check-in you didn’t finish. Want to pick up where you
+            left off?
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              type="button"
+              disabled={pending}
+              onClick={() => {
+                setResumeOffer(false);
+                void send({ type: "start" }, null, resumeSessionId);
+              }}
+            >
+              Pick up where you left off
+            </Button>
+            <Button
+              type="button"
+              variant="secondary"
+              disabled={pending}
+              onClick={() => {
+                setResumeOffer(false);
+                void fetch("/api/checkin/close", { method: "POST" });
+              }}
+            >
+              Start fresh
+            </Button>
+          </div>
+        </div>
+      ) : null}
+
+      {showOptions && atRouter && !resumeOffer ? (
         <div className="flex flex-col gap-2">
           {routerOptions.map((option) => (
             <OptionButton

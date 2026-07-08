@@ -17,6 +17,16 @@ export default async function CheckinPage() {
   if (!user) redirect("/auth/sign-in");
 
   const flags = getFlags();
+
+  // Offer to resume the most recent unfinished check-in (WS8).
+  const { data: openSession } = await supabase
+    .from("chat_sessions")
+    .select("id")
+    .is("ended_at", null)
+    .order("started_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
   return (
     <main className="flex flex-1 flex-col">
       <CheckinClient
@@ -25,6 +35,7 @@ export default async function CheckinPage() {
           id,
           label,
         }))}
+        resumeSessionId={openSession?.id ?? null}
       />
     </main>
   );
