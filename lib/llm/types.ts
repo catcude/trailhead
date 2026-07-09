@@ -4,6 +4,8 @@ export interface Message {
 }
 
 export interface ChatOptions {
+  /** Override the provider's default model id. */
+  model?: string;
   maxTokens?: number;
   temperature?: number;
 }

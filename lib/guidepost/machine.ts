@@ -13,6 +13,7 @@ import {
   type JuniperMessage,
   type SessionState,
 } from "./types";
+import { bumpProbeDepth, shouldOfferReset } from "./reflective-depth";
 
 /**
  * The Guidepost stage state machine. Pure and deterministic: no LLM, no
@@ -210,10 +211,25 @@ export function advance(
       if (input.type !== "text") {
         throw new EngineInputError(`node "${node.id}" expects text`);
       }
+      // Reflective-depth cap (PRD §6.3, D4): count consecutive emotional-probe
+      // turns; once the cap is reached, divert to a grounding reset instead of
+      // another probe. Juniper's ack still speaks first (non-dismissive). Only
+      // fires for nodes that opt in (emotionalProbe + depthResetTo) — pending
+      // Cat's node list + transition copy, so inert in current flows.
+      const depthAfter = bumpProbeDepth(state.probeDepth, node);
+      if (shouldOfferReset(node, depthAfter)) {
+        const reset = resolveTarget(state, node.depthResetTo as string);
+        return present(
+          ctx,
+          { ...state, probeDepth: 0, returnTo: reset.returnTo },
+          reset.nodeId,
+          ack,
+        );
+      }
       const resolved = resolveTarget(state, node.next);
       return present(
         ctx,
-        { ...state, returnTo: resolved.returnTo },
+        { ...state, probeDepth: depthAfter, returnTo: resolved.returnTo },
         resolved.nodeId,
         ack,
       );

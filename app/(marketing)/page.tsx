@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Mountains } from "@/components/marketing/mountains";
+import { HeroTaste } from "@/components/marketing/hero-taste";
 
 /*
  * Landing v0 (static). The interactive reflective hero — a live taste of the
@@ -16,22 +17,28 @@ export default function LandingPage() {
     <main className="flex flex-1 flex-col">
       {/* Hero */}
       <section className="relative overflow-hidden">
-        <div className="mx-auto flex w-full max-w-5xl flex-col items-start gap-6 px-6 pt-14 pb-40 sm:pt-24">
-          <h1 className="max-w-xl text-4xl font-semibold text-balance text-depth sm:text-5xl">
-            A place to figure things out — at your own pace, on your own terms.
-          </h1>
-          <p className="max-w-md text-lg text-balance">
-            Built on real science. Made for real life.
-          </p>
-          <div className="flex flex-col items-start gap-2">
-            <Link
-              href="/auth/sign-up"
-              className="inline-flex min-h-11 items-center justify-center rounded-full bg-cta px-8 py-3 text-lg font-semibold text-white transition-colors hover:bg-cta/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-depth"
-            >
-              Try it
-            </Link>
-            <span className="text-sm text-ink/70">No tricks, no pressure.</span>
+        <div className="mx-auto grid w-full max-w-5xl grid-cols-1 items-start gap-10 px-6 pt-14 pb-40 sm:pt-24 md:grid-cols-2">
+          <div className="flex flex-col items-start gap-6">
+            <h1 className="max-w-xl text-4xl font-semibold text-balance text-depth sm:text-5xl">
+              A place to figure things out — at your own pace, on your own
+              terms.
+            </h1>
+            <p className="max-w-md text-lg text-balance">
+              Built on real science. Made for real life.
+            </p>
+            <div className="flex flex-col items-start gap-2">
+              <Link
+                href="/auth/sign-up"
+                className="inline-flex min-h-11 items-center justify-center rounded-full bg-cta px-8 py-3 text-lg font-semibold text-white transition-colors hover:bg-cta/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-depth"
+              >
+                Try it
+              </Link>
+              <span className="text-sm text-ink/70">
+                No tricks, no pressure.
+              </span>
+            </div>
           </div>
+          <HeroTaste />
         </div>
         <Mountains className="absolute bottom-0 left-0 h-40 w-full" />
       </section>

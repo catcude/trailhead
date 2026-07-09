@@ -56,3 +56,35 @@ export const tones: Record<string, { descriptor: string; sourceRef: string }> =
       sourceRef: "paths/yellow-path.md §Cheat Sheet Stage 1",
     },
   };
+
+/**
+ * Stage-5 tone recalibration (PRD §3.3). The student's check-in selection at
+ * Stage 5 recalibrates Juniper's tone for the rest of the session. Keyed by
+ * the Stage-5 option id (shared across Green `s5-checkin` and Yellow `s5`),
+ * mapped by the PRD emoji rows:
+ *   💪 → hyped · 😬 → reassuring · 🌀 → calming · 🔄 → reflective · 🤷 → grounding
+ * These are transcriptions of the PRD table, not user-facing copy.
+ */
+export const stage5ToneByChoice: Record<string, string> = {
+  "crush-it": "hyped", // 💪 Ready to crush it
+  nervous: "reassuring", // 😬 Ready but nervous
+  overwhelmed: "calming", // 🌀 Optimistic but overwhelmed (Green)
+  foggy: "calming", // 🌀 Foggy or unsure (Yellow)
+  processing: "reflective", // 🔄 Processing plan changes (Green)
+  adjusting: "reflective", // 🔄 Still adjusting to changes (Yellow)
+  "not-sure": "grounding", // 🤷 Not sure (Green)
+  idk: "grounding", // 🤷 I don't know yet (Yellow)
+};
+
+/**
+ * The recalibrated tone for this session, if the student has made a Stage-5
+ * selection. `choices` is keyed by node id — Green records under `s5-checkin`,
+ * Yellow under `s5`. Returns undefined when no Stage-5 choice is recorded yet
+ * (the caller then falls back to the current node's own tone).
+ */
+export function recalibratedTone(
+  choices: Record<string, string>,
+): string | undefined {
+  const choice = choices["s5-checkin"] ?? choices["s5"];
+  return choice ? stage5ToneByChoice[choice] : undefined;
+}

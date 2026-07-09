@@ -19,8 +19,21 @@ import {
   type EngineOutput,
   type SessionState,
 } from "@/lib/guidepost/types";
-import { screen } from "@/lib/llm/safety";
-import { getProvider } from "@/lib/llm/provider";
+import { screen, type CrisisCategory } from "@/lib/llm/safety";
+import { classifyCrisis } from "@/lib/llm/safety-classifier";
+import { getProvider, streamAuthored } from "@/lib/llm/provider";
+import { adaptMessage } from "@/lib/llm/adapt";
+import { interpretBrainDump } from "@/lib/llm/interpret";
+import { explainPlanChange } from "@/lib/llm/plan-change";
+import { recalibratedTone } from "@/content/tone/tones";
+import { canStartCheckin } from "@/lib/billing/entitlement";
+
+/**
+ * Free-tier paywall copy (D2). Kind, honest, no dark pattern — names the free
+ * Mini Resets. Draft (needsCat): exact wording pending Cat.
+ */
+const PAYWALL_COPY =
+  "You’ve used today’s check-in. Come back tomorrow whenever you’re ready — or unlock unlimited check-ins any time. Mini Resets are always free.";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/server";
 import { createFixedWindowLimiter } from "@/lib/utils/rate-limit";
@@ -110,6 +123,15 @@ export async function POST(request: NextRequest) {
       if (!pathContent) {
         return NextResponse.json({ error: "invalid request" }, { status: 400 });
       }
+      // Freemium gate (WS7): a full check-in = a NEW session. Mini Resets run
+      // inside an existing session, so they're never gated here. Subscribers
+      // are unlimited; free users get FREE_DAILY_CHECKINS/day.
+      if (!(await canStartCheckin(supabase, user.id))) {
+        return NextResponse.json(
+          { error: PAYWALL_COPY, paywall: true },
+          { status: 402 },
+        );
+      }
       content = pathContent;
       const ctx: EngineContext = { content, quoteBanks };
       const output = startSession(ctx, variant);
@@ -152,14 +174,30 @@ export async function POST(request: NextRequest) {
 
     // 5. Safety screen — free text only, before ANYTHING else runs.
     if (body.input.type === "text") {
-      const verdict = screen(body.input.text);
-      if (!verdict.ok) {
+      const lexicon = screen(body.input.text);
+      // The lexicon is the floor. The optional second-pass classifier may only
+      // ADD an escalation it missed (WS4); it can never clear a lexicon hit.
+      let crisisCategory: CrisisCategory | null = lexicon.ok
+        ? null
+        : lexicon.category;
+      if (crisisCategory === null && flags.safetyClassifier) {
+        crisisCategory = await classifyCrisis(getProvider(), body.input.text);
+      }
+      if (crisisCategory) {
+        // Identifier-free telemetry (CLAUDE.md §Safety): category/path/stage
+        // and nothing else — never the trigger text, user id, or session id.
+        const stage = content.nodes[state.currentNodeId]?.stage ?? null;
+        await supabase.rpc("log_safety_event", {
+          p_category: crisisCategory,
+          p_path: loaded.data.path,
+          p_stage: stage,
+        });
         const safetyMessages = composeSafetyMessages();
         const pausedState: SessionState = { ...state, done: true };
         await supabase
           .from("chat_sessions")
           .update({
-            state: { ...pausedState, safetyPause: verdict.category },
+            state: { ...pausedState, safetyPause: crisisCategory },
             ended_at: new Date().toISOString(),
           })
           .eq("id", sessionId);
@@ -193,6 +231,44 @@ export async function POST(request: NextRequest) {
     // 6. Advance — only the deterministic machine moves the user.
     const preNode = content.nodes[state.currentNodeId];
     const output = advance(state, body.input, ctx);
+
+    // 6a. Free-text interpretation (WS2): seed the Covey sorter with the
+    // student's brain-dump items. The machine still owns flow — this only
+    // fills the tool's props. Falls back to a deterministic split in verbatim
+    // mode or on any LLM error (see interpretBrainDump).
+    if (
+      output.tool?.type === "coveyQuadrantSorter" &&
+      body.input.type === "text"
+    ) {
+      const items = await interpretBrainDump(getProvider(), body.input.text);
+      output.tool = {
+        ...output.tool,
+        props: { ...output.tool.props, items },
+      };
+    }
+
+    // 6b. Grounded plan-change explanation (WS2): when a Green student asks to
+    // walk through WHY the plan changed, prepend an explanation grounded ONLY
+    // in their own session text. Skipped entirely in verbatim mode / on error
+    // (explainPlanChange returns null), preserving M1 behavior. The authored
+    // "Does that help?" line still follows verbatim.
+    if (
+      content.path === "green" &&
+      preNode?.id === "s5-processing" &&
+      body.input.type === "option" &&
+      body.input.optionId === "yes-walk-through"
+    ) {
+      const userInputs = await loadSessionUserText(supabase, sessionId);
+      const explanation = await explainPlanChange(getProvider(), userInputs);
+      if (explanation) {
+        output.messages.unshift({
+          nodeId: "s5-processing-help:why",
+          text: explanation,
+          // Already generated and grounded — never re-adapted.
+          adaptable: false,
+        });
+      }
+    }
 
     // 7. Persist turn + node-specific side effects.
     await persistTurn(supabase, sessionId, userMessage, output, preNode?.stage);
@@ -232,6 +308,28 @@ export async function POST(request: NextRequest) {
     }
     throw error;
   }
+}
+
+/**
+ * The student's own text from THIS session (role=user rows), for grounding
+ * the plan-change explanation. Session-scoped by design — never joins to
+ * profiles, email, or display name (PRD §6.3). Tool-result payloads are
+ * excluded (not the student's words).
+ */
+async function loadSessionUserText(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  sessionId: string,
+): Promise<string[]> {
+  const { data, error } = await supabase
+    .from("chat_messages")
+    .select("content, created_at")
+    .eq("session_id", sessionId)
+    .eq("role", "user")
+    .order("created_at", { ascending: true });
+  if (error || !data) return [];
+  return data
+    .map((row) => (row as { content: string }).content)
+    .filter((c) => typeof c === "string" && !c.startsWith('{"toolResult"'));
 }
 
 async function persistTurn(
@@ -288,6 +386,9 @@ function sseHeaders() {
 
 function sse(output: EngineOutput, sessionId: string): Response {
   const provider = getProvider();
+  // Stage-5 recalibration (PRD §3.3) overrides the node's own tone for the
+  // rest of the session; falls back to the node tone before any Stage-5 pick.
+  const tone = recalibratedTone(output.state.choices) ?? output.toneTag;
   const encoder = new TextEncoder();
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
@@ -297,9 +398,13 @@ function sse(output: EngineOutput, sessionId: string): Response {
         );
       for (const message of output.messages) {
         send("message", { nodeId: message.nodeId });
-        for await (const chunk of provider.stream([
-          { role: "assistant", content: message.text },
-        ])) {
+        // `adaptMessage` rephrases only `adaptable` lines under a real
+        // provider and falls back to authored text on any LLM error. Safety,
+        // reflection quotes, and acknowledgments marked `adaptable: false`
+        // are byte-identical (PRD §6.2). The resolved line is then chunked by
+        // the verbatim streamer so the SSE `token` framing is uniform.
+        const text = await adaptMessage(provider, message, tone);
+        for await (const chunk of streamAuthored(text)) {
           send("token", { text: chunk });
         }
       }

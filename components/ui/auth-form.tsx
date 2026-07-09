@@ -21,6 +21,10 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  // 13+ attestation (OQ4 posture): a checkbox only — we collect NO date of
+  // birth (data minimization). Parental consent is reserved for the school
+  // rollout. Gates sign-up; sign-in never asks.
+  const [ageOk, setAgeOk] = useState(false);
   const [message, setMessage] = useState<string | null>(
     searchParams.get("error") === "auth"
       ? "That sign-in didn't go through. No worries — try again."
@@ -72,6 +76,10 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
   }
 
   async function handleGoogle() {
+    if (mode === "sign-up" && !ageOk) {
+      setMessage("Please confirm you’re 13 or older to make an account.");
+      return;
+    }
     setPending(true);
     const supabase = createClient();
     await supabase.auth.signInWithOAuth({
@@ -119,6 +127,19 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
             className="min-h-11 rounded-lg border border-sand/60 px-3 focus-visible:outline-2 focus-visible:outline-depth"
           />
         </label>
+
+        {mode === "sign-up" ? (
+          <label className="flex items-start gap-2 text-sm">
+            <input
+              type="checkbox"
+              required
+              checked={ageOk}
+              onChange={(e) => setAgeOk(e.target.checked)}
+              className="mt-0.5 h-4 w-4 shrink-0 focus-visible:outline-2 focus-visible:outline-depth"
+            />
+            <span>I’m 13 or older.</span>
+          </label>
+        ) : null}
 
         {message ? (
           <p role="status" className="text-sm text-depth">

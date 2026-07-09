@@ -4,6 +4,7 @@ import { yellow } from "./paths/yellow";
 import { greenQuotes } from "./quotes/green";
 import { yellowQuotes } from "./quotes/yellow";
 import { miniResetToolkits } from "./tools/mini-reset";
+import { dialogueTools } from "./tools/dialogue-tools";
 import { bigFiveQuiz } from "./quiz/big-five";
 import { routerPrompt, routerOptions } from "./router";
 import { crisisContent } from "./safety/crisis";
@@ -81,6 +82,15 @@ export function collectAuthoredStrings(): Record<string, string> {
     }
   }
 
+  for (const [id, tool] of Object.entries(dialogueTools)) {
+    out[`tools/${id}/description`] = tool.description;
+    if ("items" in tool && tool.items) {
+      for (const item of tool.items) {
+        out[`tools/${id}/item:${item.id}`] = item.label;
+      }
+    }
+  }
+
   out["router/prompt"] = routerPrompt.text;
   for (const option of routerOptions) {
     out[`router/option:${option.id}`] = option.label;
@@ -93,6 +103,14 @@ export function collectAuthoredStrings(): Record<string, string> {
       `${resource.name} — ${resource.detail}`;
   });
   out["safety/crisis/trusted-adult"] = crisisContent.trustedAdult;
+  // D3 conversation-starter slot (gap G-S1) — only locked once Cat fills it.
+  if (crisisContent.startConversation.heading) {
+    out["safety/crisis/start-conversation/heading"] =
+      crisisContent.startConversation.heading;
+  }
+  crisisContent.startConversation.starters.forEach((s, i) => {
+    out[`safety/crisis/start-conversation/${i}`] = s;
+  });
 
   return out;
 }

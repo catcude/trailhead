@@ -32,4 +32,21 @@ export const crisisContent = {
   trustedAdult:
     "Is there an adult you trust — a parent, a teacher, a counselor — you could talk to today? You don’t have to carry this alone.",
   trustedAdultNeedsCat: true,
+  /**
+   * D3 — "equip, don't just name." Cat's direction is that Juniper should give
+   * the student actual scripts, tools, and guidance for approaching a trusted
+   * adult, not merely suggest one. This is the STRUCTURE only: a heading slot
+   * and a list of conversation starters, all `adaptable: false`.
+   *
+   * The copy is a GAP (G-S1, needsCat): Cat's recorded answer was a partial
+   * voice transcription, so nothing is written here. While empty, the slot is
+   * hidden — composeSafetyMessages() and the content lock skip it until Cat
+   * provides the heading and starters (docs/content-review/m2-for-cat.md).
+   */
+  startConversation: {
+    heading: undefined as string | undefined,
+    starters: [] as string[],
+    needsCat: true,
+    gapRef: "G-S1",
+  },
 } as const;

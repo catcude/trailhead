@@ -13,6 +13,12 @@ import {
   type CoveySorterResult,
 } from "@/components/tools/covey-quadrant-sorter";
 import { MiniResetToolkit } from "@/components/tools/mini-reset-toolkit";
+import { StartSmallPlanner } from "@/components/tools/start-small-planner";
+import { MicroNeedsMenu } from "@/components/tools/micro-needs-menu";
+import { GentleFocusAnchor } from "@/components/tools/gentle-focus-anchor";
+import { MoodMatchingVisual } from "@/components/tools/mood-matching-visual";
+import { EveningWindDown } from "@/components/tools/evening-wind-down";
+import { AhaTracker } from "@/components/tools/aha-tracker";
 
 interface Bubble {
   role: "juniper" | "user";
@@ -33,9 +39,12 @@ interface RouterOptionProp {
 export function CheckinClient({
   routerPrompt,
   routerOptions,
+  resumeSessionId = null,
 }: {
   routerPrompt: string;
   routerOptions: RouterOptionProp[];
+  /** Most recent unfinished session, if any — offers a resume (WS8). */
+  resumeSessionId?: string | null;
 }) {
   const [bubbles, setBubbles] = useState<Bubble[]>([
     { role: "juniper", text: routerPrompt },
@@ -45,6 +54,10 @@ export function CheckinClient({
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [draft, setDraft] = useState("");
+  const [horizon, setHorizon] = useState<string[] | null>(null);
+  const [resumeOffer, setResumeOffer] = useState<boolean>(
+    Boolean(resumeSessionId),
+  );
   const bottomRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -54,6 +67,7 @@ export function CheckinClient({
   async function send(
     input: Record<string, unknown>,
     userBubble: string | null,
+    sessionIdOverride?: string,
   ) {
     setPending(true);
     setError(null);
@@ -66,7 +80,7 @@ export function CheckinClient({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          sessionId: frame?.sessionId,
+          sessionId: sessionIdOverride ?? frame?.sessionId,
           input,
           clientLocalHour: new Date().getHours(),
         }),
@@ -193,7 +207,39 @@ export function CheckinClient({
       ) : null}
 
       {/* ── Interactive area ─────────────────────────────────────────────── */}
-      {showOptions && atRouter ? (
+      {resumeOffer && atRouter && resumeSessionId ? (
+        <div className="flex flex-col gap-2 rounded-[var(--radius-card)] border border-sand/40 bg-calm/10 p-4">
+          <p className="text-sm text-depth">
+            You have a check-in you didn’t finish. Want to pick up where you
+            left off?
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              type="button"
+              disabled={pending}
+              onClick={() => {
+                setResumeOffer(false);
+                void send({ type: "start" }, null, resumeSessionId);
+              }}
+            >
+              Pick up where you left off
+            </Button>
+            <Button
+              type="button"
+              variant="secondary"
+              disabled={pending}
+              onClick={() => {
+                setResumeOffer(false);
+                void fetch("/api/checkin/close", { method: "POST" });
+              }}
+            >
+              Start fresh
+            </Button>
+          </div>
+        </div>
+      ) : null}
+
+      {showOptions && atRouter && !resumeOffer ? (
         <div className="flex flex-col gap-2">
           {routerOptions.map((option) => (
             <OptionButton
@@ -232,6 +278,11 @@ export function CheckinClient({
           {frame.tool?.type === "coveyQuadrantSorter" ? (
             <CoveyQuadrantSorter
               disabled={pending}
+              items={
+                Array.isArray(frame.tool.props?.items)
+                  ? (frame.tool.props.items as string[])
+                  : undefined
+              }
               onDone={(result: CoveySorterResult) =>
                 send({ type: "toolResult", payload: result }, "Sorted ✓")
               }
@@ -249,6 +300,69 @@ export function CheckinClient({
                   { type: "toolResult", payload: result },
                   result.tried ?? "Took a breather",
                 )
+              }
+            />
+          ) : null}
+
+          {frame.tool?.type === "startSmallPlanner" ? (
+            <StartSmallPlanner
+              disabled={pending}
+              onDone={(result) =>
+                send({ type: "toolResult", payload: result }, "Planned ✓")
+              }
+            />
+          ) : null}
+
+          {frame.tool?.type === "microNeedsMenu" ? (
+            <MicroNeedsMenu
+              disabled={pending}
+              onDone={(result) =>
+                send(
+                  { type: "toolResult", payload: result },
+                  result.need ?? "I’m okay for now",
+                )
+              }
+            />
+          ) : null}
+
+          {frame.tool?.type === "gentleFocusAnchor" ? (
+            <GentleFocusAnchor
+              disabled={pending}
+              onDone={(result) =>
+                send({ type: "toolResult", payload: result }, "Back")
+              }
+            />
+          ) : null}
+
+          {frame.tool?.type === "moodMatchingVisual" ? (
+            <MoodMatchingVisual
+              disabled={pending}
+              onDone={(result) =>
+                send(
+                  { type: "toolResult", payload: result },
+                  result.mood ?? "Continued",
+                )
+              }
+            />
+          ) : null}
+
+          {frame.tool?.type === "eveningWindDown" ? (
+            <EveningWindDown
+              disabled={pending}
+              onDone={(result) =>
+                send(
+                  { type: "toolResult", payload: result },
+                  result.choice ?? "Wound down",
+                )
+              }
+            />
+          ) : null}
+
+          {frame.tool?.type === "ahaTracker" ? (
+            <AhaTracker
+              disabled={pending}
+              onDone={(result) =>
+                send({ type: "toolResult", payload: result }, "Saved ✓")
               }
             />
           ) : null}
@@ -292,6 +406,43 @@ export function CheckinClient({
                   {FALLBACK_LABELS[kind]}
                 </button>
               ))}
+              {frame.fallbacks.includes("stillStuck") ? (
+                <button
+                  type="button"
+                  onClick={async () => {
+                    try {
+                      const res = await fetch("/api/weekly-horizon");
+                      if (!res.ok) return;
+                      const data = (await res.json()) as {
+                        intentions?: string[];
+                      };
+                      setHorizon(data.intentions ?? []);
+                    } catch {
+                      // Non-blocking convenience; ignore fetch errors.
+                    }
+                  }}
+                  className="min-h-9 rounded-full border border-sand/60 px-3 text-xs text-ink/70 transition-colors hover:border-calm hover:text-depth focus-visible:outline-2 focus-visible:outline-depth"
+                >
+                  Show me my Weekly Horizon
+                </button>
+              ) : null}
+            </div>
+          ) : null}
+
+          {horizon ? (
+            <div className="mt-1 rounded-lg border border-sand/50 bg-calm/10 p-3">
+              {horizon.length > 0 ? (
+                <ul className="flex flex-col gap-1 text-sm text-depth">
+                  {horizon.map((intention, i) => (
+                    <li key={i}>• {intention}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm text-ink/70">
+                  You haven’t set a Weekly Horizon yet — you can add one from
+                  your dashboard.
+                </p>
+              )}
             </div>
           ) : null}
         </div>

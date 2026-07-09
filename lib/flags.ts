@@ -12,6 +12,12 @@ export interface Flags {
   redPath: boolean;
   dashboardExtras: boolean;
   quizScoring: boolean;
+  /**
+   * Second-pass LLM crisis classifier (WS4). Add-only augmentation of the
+   * deterministic lexicon; default off until reviewed. Never weakens the
+   * lexicon floor.
+   */
+  safetyClassifier: boolean;
 }
 
 export function getFlags(): Flags {
@@ -22,5 +28,6 @@ export function getFlags(): Flags {
       process.env.RED_PATH_RELEASE_APPROVED === "true",
     dashboardExtras: process.env.FF_DASHBOARD_EXTRAS === "true",
     quizScoring: process.env.FF_QUIZ_SCORING === "true",
+    safetyClassifier: process.env.SAFETY_CLASSIFIER === "true",
   };
 }

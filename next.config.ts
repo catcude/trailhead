@@ -8,10 +8,12 @@ import type { NextConfig } from "next";
  * tightening to nonce-based CSP is tracked in docs/security.md.
  */
 // React needs eval() for dev-mode debugging only; production stays strict.
+// Stripe checkout/portal are full-page redirects; js.stripe.com is allowed in
+// script-src/frame-src for Stripe.js (deliberate, nothing else — see §5).
 const scriptSrc =
   process.env.NODE_ENV === "development"
-    ? "script-src 'self' 'unsafe-inline' 'unsafe-eval'"
-    : "script-src 'self' 'unsafe-inline'";
+    ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com"
+    : "script-src 'self' 'unsafe-inline' https://js.stripe.com";
 
 const CSP = [
   "default-src 'self'",
@@ -19,7 +21,8 @@ const CSP = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
   "font-src 'self'",
-  "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
+  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.stripe.com",
+  "frame-src 'self' https://js.stripe.com",
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",

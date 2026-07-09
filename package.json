@@ -15,14 +15,17 @@
     "content:lock": "vitest run -u tests/content-integrity.test.ts"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.110.0",
     "@supabase/ssr": "^0.12.0",
     "@supabase/supabase-js": "^2.110.1",
     "next": "16.2.10",
     "react": "19.2.7",
     "react-dom": "19.2.7",
+    "stripe": "^22.3.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^26",
     "@types/react": "^19",
