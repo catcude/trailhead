@@ -1,8 +1,10 @@
 import type { PathContent, PathId, QuoteBank } from "./schema";
 import { green } from "./paths/green";
 import { yellow } from "./paths/yellow";
+import { blue } from "./paths/blue";
 import { greenQuotes } from "./quotes/green";
 import { yellowQuotes } from "./quotes/yellow";
+import { blueQuotes } from "./quotes/blue";
 import { miniResetToolkits } from "./tools/mini-reset";
 import { dialogueTools } from "./tools/dialogue-tools";
 import { bigFiveQuiz } from "./quiz/big-five";
@@ -21,11 +23,13 @@ import { crisisContent } from "./safety/crisis";
 export const paths: Partial<Record<PathId, PathContent>> = {
   green,
   yellow,
+  blue,
 };
 
 export const quoteBanks: Partial<Record<PathId, QuoteBank>> = {
   green: greenQuotes,
   yellow: yellowQuotes,
+  blue: blueQuotes,
 };
 
 export function collectAuthoredStrings(): Record<string, string> {
