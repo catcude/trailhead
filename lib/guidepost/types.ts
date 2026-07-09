@@ -47,6 +47,14 @@ export interface EngineOutput {
   tip?: Tip;
   /** Fallback escape hatches the current node declares. */
   fallbacks?: FallbackKind[];
+  /**
+   * Set when the chosen edge shifts to another path (permeability, M3). The
+   * machine cannot present another path's content itself, so it returns this
+   * marker plus any acknowledgment lines; the route swaps the active path,
+   * checks the target path's flag, records the hop, and presents the target
+   * node. `messages` on a shift output carry only the acknowledgment.
+   */
+  pathShift?: { path: PathId; nodeId: string };
   /** The current node accepts free text. */
   freeText: boolean;
   stage: number;

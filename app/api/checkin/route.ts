@@ -9,6 +9,7 @@ import {
 } from "@/lib/guidepost/api-schema";
 import {
   advance,
+  enterPathAt,
   startSession,
   type EngineContext,
 } from "@/lib/guidepost/machine";
@@ -158,7 +159,7 @@ export async function POST(request: NextRequest) {
     sessionId = body.sessionId;
     const loaded = await supabase
       .from("chat_sessions")
-      .select("id, path, state")
+      .select("id, path, state, path_history")
       .eq("id", sessionId)
       .single();
     if (loaded.error || !loaded.data) {
@@ -231,6 +232,48 @@ export async function POST(request: NextRequest) {
     // 6. Advance — only the deterministic machine moves the user.
     const preNode = content.nodes[state.currentNodeId];
     const output = advance(state, body.input, ctx);
+
+    // 6-shift. Path permeability (M3): the machine hands back a shift marker;
+    // the route (never the LLM) swaps the active path. The target path's flag
+    // is checked HERE, at shift time — a shift into a gated path is refused
+    // exactly as router entry is, so gating can't be bypassed mid-session.
+    if (output.pathShift) {
+      const { path: toPath, nodeId } = output.pathShift;
+      if (!isPathAvailable(toPath, flags)) {
+        return NextResponse.json({ error: "invalid request" }, { status: 400 });
+      }
+      const shiftedContent = paths[toPath];
+      if (!shiftedContent) {
+        return NextResponse.json({ error: "invalid request" }, { status: 400 });
+      }
+      const shifted = enterPathAt(
+        { content: shiftedContent, quoteBanks },
+        output.state,
+        nodeId,
+        output.messages,
+      );
+      const priorHistory = Array.isArray(loaded.data.path_history)
+        ? (loaded.data.path_history as unknown[])
+        : [];
+      const historyEntry = {
+        from: content.path,
+        to: toPath,
+        atNode: preNode?.id ?? state.currentNodeId,
+        at: new Date().toISOString(),
+      };
+      await persistTurn(
+        supabase,
+        sessionId,
+        userMessage,
+        shifted,
+        preNode?.stage,
+        {
+          path: toPath,
+          path_history: [...priorHistory, historyEntry],
+        },
+      );
+      return sse(shifted, sessionId);
+    }
 
     // 6a. Free-text interpretation (WS2): seed the Covey sorter with the
     // student's brain-dump items. The machine still owns flow — this only
@@ -332,12 +375,23 @@ async function loadSessionUserText(
     .filter((c) => typeof c === "string" && !c.startsWith('{"toolResult"'));
 }
 
+/** green/yellow are always available; blue/red only behind their flags. */
+function isPathAvailable(
+  path: PathContent["path"],
+  flags: ReturnType<typeof getFlags>,
+): boolean {
+  if (path === "blue") return flags.bluePath;
+  if (path === "red") return flags.redPath;
+  return true;
+}
+
 async function persistTurn(
   supabase: Awaited<ReturnType<typeof createClient>>,
   sessionId: string,
   userMessage: string | null,
   output: EngineOutput,
   userStage?: number,
+  extraSession?: Record<string, unknown>,
 ) {
   const rows: {
     session_id: string;
@@ -371,6 +425,7 @@ async function persistTurn(
       current_node: output.state.currentNodeId,
       state: output.state,
       ended_at: output.done ? new Date().toISOString() : null,
+      ...extraSession,
     })
     .eq("id", sessionId);
   if (error) throw error;

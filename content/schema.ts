@@ -83,6 +83,24 @@ export type Tip = z.infer<typeof TipSchema>;
 /** Target sentinel: return to the node that triggered a fallback detour. */
 export const RETURN_TARGET = "@return";
 
+/**
+ * A cross-path shift target is written "<path>:<nodeId>" (e.g. "yellow:s1").
+ * Returns the parsed path + node when the string is a well-formed shift target
+ * for a known path, else null (ordinary same-path targets and "@return").
+ * The state machine uses this to hand a permeability shift back to the route;
+ * only the route (never the LLM) then swaps the active path.
+ */
+export function parseShiftTarget(
+  target: string,
+): { path: PathId; nodeId: string } | null {
+  const idx = target.indexOf(":");
+  if (idx <= 0) return null;
+  const parsed = PathIdSchema.safeParse(target.slice(0, idx));
+  const nodeId = target.slice(idx + 1);
+  if (!parsed.success || !nodeId) return null;
+  return { path: parsed.data, nodeId };
+}
+
 const NodeBase = z.object({
   id: z.string().min(1),
   stage: StageSchema,

@@ -1,5 +1,6 @@
 import {
   RETURN_TARGET,
+  parseShiftTarget,
   type ContentNode,
   type PathContent,
   type PathId,
@@ -41,6 +42,29 @@ function juniperLine(
       ? node.juniper.evening
       : node.juniper.text;
   return { nodeId: node.id, text, adaptable: node.juniper.adaptable };
+}
+
+/**
+ * Build a path-shift output: the machine can't present another path's node
+ * (it only holds one path's content), so it returns the shift marker plus the
+ * acknowledgment lines. The route presents the target node in the new path.
+ * A shift always clears any pending fallback detour — detours don't cross paths.
+ */
+function shiftOutput(
+  state: SessionState,
+  node: ContentNode,
+  leadIn: JuniperMessage[],
+  shift: { path: PathId; nodeId: string },
+): EngineOutput {
+  return {
+    state: { ...state, returnTo: undefined },
+    messages: leadIn,
+    pathShift: shift,
+    freeText: false,
+    stage: node.stage,
+    toneTag: node.tone,
+    done: false,
+  };
 }
 
 /** Resolve a raw edge target, handling the @return sentinel. */
@@ -150,6 +174,27 @@ export function startSession(
   return present(ctx, state, ctx.content.entryNodeId, []);
 }
 
+/**
+ * Present a node in a freshly-entered path after a cross-path shift (M3). The
+ * caller passes the destination path's context; `state` keeps the user's
+ * variant and prior choices but adopts the new path and drops any pending
+ * fallback detour. `leadIn` carries the acknowledgment lines from the shifting
+ * node so Juniper's response and the new path's opening arrive together.
+ */
+export function enterPathAt(
+  ctx: EngineContext,
+  state: SessionState,
+  nodeId: string,
+  leadIn: JuniperMessage[] = [],
+): EngineOutput {
+  const entered: SessionState = {
+    ...state,
+    path: ctx.content.path,
+    returnTo: undefined,
+  };
+  return present(ctx, entered, nodeId, leadIn);
+}
+
 export function advance(
   state: SessionState,
   input: EngineInput,
@@ -170,6 +215,8 @@ export function advance(
         `node "${node.id}" has no "${input.kind}" fallback`,
       );
     }
+    const shift = parseShiftTarget(target);
+    if (shift) return shiftOutput(state, node, [], shift);
     const detourState: SessionState = { ...state, returnTo: node.id };
     return present(ctx, detourState, target, []);
   }
@@ -199,6 +246,8 @@ export function advance(
         ...state,
         choices: { ...state.choices, [node.id]: option.id },
       };
+      const shift = parseShiftTarget(option.target);
+      if (shift) return shiftOutput(chosen, node, ack, shift);
       const resolved = resolveTarget(chosen, option.target);
       return present(
         ctx,
@@ -226,6 +275,14 @@ export function advance(
           ack,
         );
       }
+      const shift = parseShiftTarget(node.next);
+      if (shift)
+        return shiftOutput(
+          { ...state, probeDepth: depthAfter },
+          node,
+          ack,
+          shift,
+        );
       const resolved = resolveTarget(state, node.next);
       return present(
         ctx,
@@ -238,6 +295,8 @@ export function advance(
       if (input.type !== "toolResult") {
         throw new EngineInputError(`node "${node.id}" expects a tool result`);
       }
+      const shift = parseShiftTarget(node.next);
+      if (shift) return shiftOutput(state, node, ack, shift);
       const resolved = resolveTarget(state, node.next);
       return present(
         ctx,
@@ -256,6 +315,8 @@ export function advance(
         ...state,
         choices: { ...state.choices, [node.id]: input.optionId },
       };
+      const shift = parseShiftTarget(node.next);
+      if (shift) return shiftOutput(chosen, node, ack, shift);
       const resolved = resolveTarget(chosen, node.next);
       return present(
         ctx,
