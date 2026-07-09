@@ -13,7 +13,11 @@ import {
   startSession,
   type EngineContext,
 } from "@/lib/guidepost/machine";
-import { routeEntry } from "@/lib/guidepost/router";
+import {
+  assertPathServable,
+  isPathAllowed,
+  routeEntry,
+} from "@/lib/guidepost/router";
 import { composeSafetyMessages } from "@/lib/guidepost/safety-messages";
 import {
   EngineInputError,
@@ -133,6 +137,7 @@ export async function POST(request: NextRequest) {
           { status: 402 },
         );
       }
+      assertPathServable(path, flags);
       content = pathContent;
       const ctx: EngineContext = { content, quoteBanks };
       const output = startSession(ctx, variant);
@@ -169,6 +174,10 @@ export async function POST(request: NextRequest) {
     if (!pathContent) {
       return NextResponse.json({ error: "session not found" }, { status: 404 });
     }
+    if (!isPathAllowed(pathContent.path, flags)) {
+      return NextResponse.json({ error: "session not found" }, { status: 404 });
+    }
+    assertPathServable(pathContent.path, flags);
     content = pathContent;
     const state = loaded.data.state as SessionState;
     const ctx: EngineContext = { content, quoteBanks };
@@ -239,9 +248,10 @@ export async function POST(request: NextRequest) {
     // exactly as router entry is, so gating can't be bypassed mid-session.
     if (output.pathShift) {
       const { path: toPath, nodeId } = output.pathShift;
-      if (!isPathAvailable(toPath, flags)) {
+      if (!isPathAllowed(toPath, flags)) {
         return NextResponse.json({ error: "invalid request" }, { status: 400 });
       }
+      assertPathServable(toPath, flags);
       const shiftedContent = paths[toPath];
       if (!shiftedContent) {
         return NextResponse.json({ error: "invalid request" }, { status: 400 });
@@ -373,16 +383,6 @@ async function loadSessionUserText(
   return data
     .map((row) => (row as { content: string }).content)
     .filter((c) => typeof c === "string" && !c.startsWith('{"toolResult"'));
-}
-
-/** green/yellow are always available; blue/red only behind their flags. */
-function isPathAvailable(
-  path: PathContent["path"],
-  flags: ReturnType<typeof getFlags>,
-): boolean {
-  if (path === "blue") return flags.bluePath;
-  if (path === "red") return flags.redPath;
-  return true;
 }
 
 async function persistTurn(
