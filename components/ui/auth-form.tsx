@@ -46,7 +46,11 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
           password,
         });
         if (error) {
-          setMessage("That email and password don't match. Try again?");
+          setMessage(
+            error.code === "email_not_confirmed"
+              ? "Almost there — check your email for a confirmation link, then come back and sign in."
+              : "That email and password don't match. Try again?",
+          );
           setPending(false);
           return;
         }
