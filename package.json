@@ -15,13 +15,13 @@
     "content:lock": "vitest run -u tests/content-integrity.test.ts"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.111.0",
-    "@supabase/ssr": "^0.12.1",
-    "@supabase/supabase-js": "^2.110.3",
+    "@anthropic-ai/sdk": "^0.112.4",
+    "@supabase/ssr": "^0.12.3",
+    "@supabase/supabase-js": "^2.110.7",
     "next": "16.2.10",
     "react": "19.2.7",
     "react-dom": "19.2.7",
-    "stripe": "^22.3.1",
+    "stripe": "^22.3.2",
     "zod": "^4.4.3"
   },
   "devDependencies": {
